@@ -1,4 +1,4 @@
-//in vec2 texCoordV;
+in vec2 texCoordV;
 out vec4 op;
 void main(void) {
   vec2 uv = (gl_FragCoord.xy/ iResolution.xy);
@@ -8,15 +8,16 @@ void main(void) {
   float data1_0=iDataArray1[0];
   float data1_1=iDataArray1[1];
   float data2_0=iDataArray2[0];
-  uv=floor(uv * (100+iRandom*iFloat2 )) / ( 100+iRandom*iFloat2 + data1_0);
-  //uv=gl_FragCoord.xy*texCoordV/ iResolution.xy;
+  float sclr=1*iFloat1;
+  uv=floor(uv * (sclr+iRandom*iFloat1 )) / ( sclr+iRandom*iFloat1 + data1_0);
+  vec2 uv2=gl_FragCoord.xy*texCoordV/ iResolution.xy;
 
   vec4 iChannel1_texture=texture2D(iChannel1, uv);
   vec4 iChannel2_texture=texture2D(iChannel2, uv);
   vec4 iChannel3_texture=texture2D(iChannel3, uv);
   vec4 iChannel4_texture=texture2D(iChannel4, uv);
   vec4 iChannel5_texture=texture2D(iChannel5, uv);
-  vec4 iChannel6_texture=texture2D(iChannel6, uv);
+  vec4 iChannel6_texture=texture2D(iChannel6, uv2);
   vec4 iChannel7_texture=texture2D(iChannel7, uv);
 
   vec4 ich[6];

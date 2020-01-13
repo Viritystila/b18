@@ -55,10 +55,15 @@
 ;;kick;
 ;;;;;;;
 (trg :kick kick
-     :in-trg (->> (rep 8 [1 10 100 200])
-                  (evr 2 [1 10 20 [0 100 0 100]])
-                  (evr 4 (acc  [(range 0 300 30)]))
-                  (evr 8 [(fll 16 [0 100])]))
+     :in-trg (->> [1 r [1 1 1 r] 1]
+                  (rep 4)
+                  (rpl 1 [1 r r  [1 1 r r]])
+                  (rpl 2 [[[1 1] r] r  [1 r] [1 1 r r]])
+                  (rpl 3 [[1 1 r r] r [1 [1 1 1 1]] r])
+                  ;(evr 2 [1 10 20 [0 100 0 100]])
+                  ;(evr 4 (acc 10  [(range 0 320 40)]))
+                  ;(evr 8 [(fll 8 [0 100])])
+                  )
      :in-f3 (->>  [ "fc1"]
                  (rep 8)
                  ;(evr 2  [ "fg2" "fc2" "f bb2" "ff2"])
@@ -91,17 +96,20 @@
 (pause! :snare)
 
 (trg :snare smp
-     :in-trg (->> [(rtm  2 4)]
-                  (rep 8)
-                  (evr 2 [(rtm 2 4)])
-                  (evr 3 (fn [x] (del 0 1 x))))
+     :in-trg (->> [r 1 r [1 [1 1]]]
+                  (rep 4)
+                  (rpl 2 [r 1 r [r r 1 1]])
+                  (rpl 3 [[r [1 1]]  [r 1]])
+                  ;(evr 2 [[r 1] r 1 r])
+                  ;(evr 4 [ [r 1] 4])
+                  )
      :in-step [2]; [1 [1 1] 1.5 1.5]     ; [1.5] [1]       ;":in-trg2"
      :in-loop [0]
      :in-start-pos [0]
-     :in-buf (fll 128 ["b sn2" "bsn0"])
+     :in-buf (fll 128 ["b sn2" "bsn1" "bsn0"])
      :in-amp [1]       ; [0.15]
      )
 
 (play! :snare)
 
-(volume! :snare 0.25)
+(volume! :snare 0.125)
