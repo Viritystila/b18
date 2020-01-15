@@ -18,7 +18,7 @@ void main(void) {
   vec4 iChannel4_texture=texture2D(iChannel4, uv);
   vec4 iChannel5_texture=texture2D(iChannel5, uv);
   vec4 iChannel6_texture=texture2D(iChannel6, uv);
-  vec4 iChannel7_texture=texture2D(iChannel7, uv);
+  vec4 iChannel7_texture=texture2D(iChannel7, uv2);
 
   vec4 ich[6];
   ich[0]=iChannel1_texture;
@@ -35,7 +35,8 @@ void main(void) {
   vec4 ccc=vec4(cos(iGlobalTime*10.41)+data2_0, data1_0, sin(iGlobalTime*3.14+data1_1), 1);
   vec4 ppp=mix(iChannel2_texture, ccc, 0.5);
   float fade_size=2;
-  float p1= mix(fade_size, 0.0-fade_size, uv.x-0.125);
+  float p1= mix(fade_size, 0.0-fade_size, uv.x-0.125*iFloat1/100);
   vec4 mixxx =mix(iChannel7_texture, iChannel6_texture, smoothstep(1.0, 0.0, p1));
-  op =mixxx;// ich[timefloor];//mixxx;//mix(text, ppp, cos(iGlobalTime*1.41)+data2_0);//ppp;//text;//iChannel1_texture;//iChannel1_texture;
+  vec4 mx2=mix(mixxx, iChannel6_texture, -1);
+  op =mx2;//mixxx;// ich[timefloor];//mixxx;//mix(text, ppp, cos(iGlobalTime*1.41)+data2_0);//ppp;//text;//iChannel1_texture;//iChannel1_texture;
 }

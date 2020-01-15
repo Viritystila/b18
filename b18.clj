@@ -30,15 +30,24 @@
 
 (set-pattern-delay 0.7)
 
-(cutter.cutter/start :vs "./b18.vs" :fs "./b18.fs" :width 1280 :height 800)
+(def fs  "/mnt/Varasto/biisit/Viritystila/b18/b18.fs" )
 
-(cutter.cutter/stop-cutter)
+(def vs  "/mnt/Varasto/biisit/Viritystila/b18/b18.vs" )
+
+(def spede_fixed  "/mnt/Varasto/biisit/Viritystila/videos/spede_fixed.mp4" )
+
+(def uni_fixed  "/mnt/Varasto/biisit/Viritystila/videos/uni_fixed.mp4" )
+
+(def haps_fixed  "/mnt/Varasto/biisit/Viritystila/videos/haps_fixed.mp4" )
 
 
+(overtone.osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1280 "height" 800)
 
-(overtone.osc/osc-send oc "/cutter/set-vs-shader" "/mnt/Varasto/biisit/Viritystila/b18/b18.vs")
+(overtone.osc/osc-send oc "/cutter/stop")
 
-(overtone.osc/osc-send oc "/cutter/set-fs-shader" "/mnt/Varasto/biisit/Viritystila/b18/b18.fs")
+(overtone.osc/osc-send oc "/cutter/set-vs-shader" vs )
+
+(overtone.osc/osc-send oc "/cutter/set-fs-shader" fs )
 
 (overtone.osc/osc-send oc "/cutter/set-float" "iFloat1" 50)
 
@@ -56,13 +65,19 @@
 
 (overtone.osc/osc-send oc "/cutter/unloop-buf" "suu1")
 
-(overtone.osc/osc-send oc "/cutter/cut" "/mnt/Varasto/biisit/Viritystila/videos/spede_fixed.mp4" "spede" 50900)
+(overtone.osc/osc-send oc "/cutter/cut" spede_fixed "spede" 50900)
 
 (overtone.osc/osc-send oc "/cutter/b-buf" "spede")
 
 (overtone.osc/osc-send oc "/cutter/f-buf" "spede")
 
 (overtone.osc/osc-send oc "/cutter/i-buf" "spede" 100)
+
+(overtone.osc/osc-send oc "/cutter/cut" uni_fixed "uni1" 6460)
+
+(overtone.osc/osc-send oc "/cutter/buf" "uni1" "iChannel7")
+
+(overtone.osc/osc-send oc "/cutter/cut" haps_fixed "haps1" 0)
 
 
 (do
@@ -159,3 +174,5 @@
 
                    ))
             :snaretrg)
+
+(remove-event-handler :snaretrg)
