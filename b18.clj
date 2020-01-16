@@ -9,7 +9,7 @@
         ;[overtone.osc]
         )
   (:require ;[cutter.interface :as t]
-            [overtone.osc :asc osc])
+            [overtone.osc :as osc])
   )
 
 (future
@@ -24,7 +24,7 @@
   (add-sample name (string-to-buffer (generate-markov-text path nosamples)))
   (println "Sample" name "loaded") )
 
-(def oc (overtone.osc/osc-client "localhost" 44100))
+(def oc (osc/osc-client "localhost" 44100))
 
 (set-pattern-duration (/ 1 (* 1 0.5625)))
 
@@ -41,43 +41,47 @@
 (def haps_fixed  "/mnt/Varasto/biisit/Viritystila/videos/haps_fixed.mp4" )
 
 
-(overtone.osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1280 "height" 800)
+(osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1280 "height" 800)
 
-(overtone.osc/osc-send oc "/cutter/stop")
+(osc/osc-send oc "/cutter/stop")
 
-(overtone.osc/osc-send oc "/cutter/set-vs-shader" vs )
+(osc/osc-send oc "/cutter/set-vs-shader" vs )
 
-(overtone.osc/osc-send oc "/cutter/set-fs-shader" fs )
+(osc/osc-send oc "/cutter/set-fs-shader" fs )
 
-(overtone.osc/osc-send oc "/cutter/set-float" "iFloat1" 50)
+(osc/osc-send oc "/cutter/set-float" "iFloat1" 50)
 
-(overtone.osc/osc-send oc "/cutter/cam" "0" "iChannel6")
+(osc/osc-send oc "/cutter/cam" "0" "iChannel6")
 
-(overtone.osc/osc-send oc "/cutter/rec" "0" "suu1")
+(osc/osc-send oc "/cutter/rec" "0" "suu1")
 
-(overtone.osc/osc-send oc "/cutter/stop-cam" "0")
+(osc/osc-send oc "/cutter/set-cam" "0" "fps" 10)
 
-(overtone.osc/osc-send oc "/cutter/buf" "suu1" "iChannel6")
+(osc/osc-send oc "/cutter/stop-cam" "0")
 
-(overtone.osc/osc-send oc "/cutter/fps-buf" "suu1" 120)
+(osc/osc-send oc "/cutter/buf" "suu1" "iChannel6")
 
-(overtone.osc/osc-send oc "/cutter/l-buf" "suu1" 36 37)
+(osc/osc-send oc "/cutter/fps-buf" "suu1" 120)
 
-(overtone.osc/osc-send oc "/cutter/unloop-buf" "suu1")
+(osc/osc-send oc "/cutter/l-buf" "suu1" 36 37)
 
-(overtone.osc/osc-send oc "/cutter/cut" spede_fixed "spede" 50900)
+(osc/osc-send oc "/cutter/unloop-buf" "suu1")
 
-(overtone.osc/osc-send oc "/cutter/b-buf" "spede")
+(osc/osc-send oc "/cutter/cut" spede_fixed "spede" 50900)
 
-(overtone.osc/osc-send oc "/cutter/f-buf" "spede")
+(osc/osc-send oc "/cutter/b-buf" "spede")
 
-(overtone.osc/osc-send oc "/cutter/i-buf" "spede" 100)
+(osc/osc-send oc "/cutter/f-buf" "spede")
 
-(overtone.osc/osc-send oc "/cutter/cut" uni_fixed "uni1" 6460)
+(osc/osc-send oc "/cutter/i-buf" "spede" 100)
 
-(overtone.osc/osc-send oc "/cutter/buf" "uni1" "iChannel7")
+(osc/osc-send oc "/cutter/buf" "spede" "iChannel7")
 
-(overtone.osc/osc-send oc "/cutter/cut" haps_fixed "haps1" 0)
+(osc/osc-send oc "/cutter/cut" uni_fixed "uni1" 6460)
+
+(osc/osc-send oc "/cutter/buf" "uni1" "iChannel7")
+
+(osc/osc-send oc "/cutter/cut" haps_fixed "haps1" 0)
 
 
 (do
@@ -93,19 +97,22 @@
 ;;kick;
 ;;;;;;;
 (trg :kick kick
-     :in-trg (->> [10 r [11 12 13 r] 14]
-                  (rep 4)
-                  (rpl 1 [12 r r  [13 13 r r]])
-                  (rpl 2 [[[133 11] r] r  [2131 r] [3121 31 r r]])
-                  (rpl 3 [[11 321 r 12 r] r [31 [41 31 12 2131]] r])
+     :in-trg (->> ;[10 r [11 12 13 r] 14]
+              (rep 4 [(sfl (range 100))] [r])
+              (rep 4 )
+                  ;(rpl 1 [12 r r  [13 13 r r]])
+                  (evr 6 [[[133 11] r] r  [213 r] [312 31 r r]])
+                  ;(rpl 3 [[11 321 r 12 r] r [31 [41 31 12 2131]] r])
                   ;(evr 2 [1 10 20 [0 100 0 100]])
                   ;(evr 4 (acc 10  [(range 0 320 40)]))
                   ;(evr 8 [(fll 8 [0 100])])
                   )
      :in-f3 (->>  [ "fc1"]
                  (rep 8)
-                 (evr 2  [ ["fg2"] "fc1" "f bb1" "ff1"])
+                 (evr 2  [ ["fg0"] "fc1" "f bb1" "ff1"])
                  ))
+
+(trg! :kick :kickdist trg-fx-distortion)
 
 (on-trigger (get-trigger-val-id :kick :in-trg)
             (fn [val]
@@ -143,8 +150,11 @@
 
 (trg :snare smp
      :in-trg (->>
-              [r 1 r [1 [1 1]]]
-              (rep 4)
+                                        ;[r 1 r [1 [1 1]]]
+              [1 r r r]
+              (rep 8)
+              (evr 4  [[(rep 16 1)] (rep 7 r)])
+               (evr 6  [[(rep 16 1)] (rep 3 r)])
                   ;(rpl 2 [r 1 r [r r 1 1]])
                   ;(rpl 3 [[r [1 1]]  [r 1]])
                   ;(evr 2 [[r 1] r 1 r])
@@ -170,7 +180,7 @@
               (let []
                 ;(cutter.interface/i-buf "spede1" (int (* 1 val)))
 
-                   (overtone.osc/osc-send oc "/cutter/i-buf" "suu1" 0)
+                   (overtone.osc/osc-send oc "/cutter/i-buf" "spede" 0)
 
                    ))
             :snaretrg)

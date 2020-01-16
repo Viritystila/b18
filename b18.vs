@@ -7,7 +7,7 @@ layout(location = 1) in vec3 colors_modelspace;
 
 float ux = floor((gl_VertexID*1.0) / 8.0) + mod((gl_VertexID*1.0), 2.2);
 float vy = mod(floor((gl_VertexID*1.0) / 2.0) + floor ((gl_VertexID*1.0) /3.0), 1.0*iFloat1);
-float angle = ux /20.0 * radians(360.0) *3.0;
+float angle = ux /20.0 * radians(360.0) *1.0;
 float radius = vy + 1.0+2*iFloat1/20;
 float x = radius * cos(angle);
 float y = radius * sin(angle);
@@ -45,7 +45,10 @@ pos.yz *= mat2(cos(time),sin(time),-sin(time),cos(time));
   norm.xz *= mat2(cos(time),sin(time),-sin(time),cos(time));
   norm.yz *= mat2(cos(time),sin(time),-sin(time),cos(time));
   vec4 sp=vec4(pos.x*iResolution.y/iResolution.x,pos.y, pos.z*.5+.5, 1);
-texCoordV=xy;
+  texCoordV=vec2(cos(a1)*cos(a2),sin(a2));
+  texCoordV=vec2(pos.x*iResolution.y/iResolution.x,pos.y*iResolution.x/iResolution.y);
+  //texCoordV=texCoordV*10/2;
+  //texCoordV=xy;
 
-gl_Position = vertexPosition_modelspace*iChannel6_texture*vec4(xy*1, 0.1, 1)/sp;
+  gl_Position = vertexPosition_modelspace*vec4(1,1, 0.1, 0.1);//+iChannel6_texture;///sp; //sp;//vec4(texCoordV*1*iFloat1, 0.1, 0.1)*sp;///sp;// vertexPosition_modelspace*
 }

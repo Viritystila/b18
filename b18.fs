@@ -8,7 +8,7 @@ void main(void) {
   float data1_0=iDataArray1[0];
   float data1_1=iDataArray1[1];
   float data2_0=iDataArray2[0];
-  float sclr=1*iFloat1;
+  float sclr=10000;//*iFloat1;
   uv=floor(uv * (sclr+iRandom*iFloat1 )) / ( sclr+iRandom*iFloat1 + data1_0);
   vec2 uv2=gl_FragCoord.xy*texCoordV/ iResolution.xy;
 
@@ -18,7 +18,7 @@ void main(void) {
   vec4 iChannel4_texture=texture2D(iChannel4, uv);
   vec4 iChannel5_texture=texture2D(iChannel5, uv);
   vec4 iChannel6_texture=texture2D(iChannel6, uv);
-  vec4 iChannel7_texture=texture2D(iChannel7, uv2);
+  vec4 iChannel7_texture=texture2D(iChannel7, uv);
 
   vec4 ich[6];
   ich[0]=iChannel1_texture;
@@ -38,5 +38,5 @@ void main(void) {
   float p1= mix(fade_size, 0.0-fade_size, uv.x-0.125*iFloat1/100);
   vec4 mixxx =mix(iChannel7_texture, iChannel6_texture, smoothstep(1.0, 0.0, p1));
   vec4 mx2=mix(mixxx, iChannel6_texture, -1);
-  op =mx2;//mixxx;// ich[timefloor];//mixxx;//mix(text, ppp, cos(iGlobalTime*1.41)+data2_0);//ppp;//text;//iChannel1_texture;//iChannel1_texture;
+  op =iChannel7_texture; //mx2;//mixxx;// ich[timefloor];//mixxx;//mix(text, ppp, cos(iGlobalTime*1.41)+data2_0);//ppp;//text;//iChannel1_texture;//iChannel1_texture;
 }
