@@ -21,14 +21,18 @@ vec2 distortUV(vec2 uv, vec2 nUV, sampler2D nstex ,  float ip1)
 vec2 noiseUV(vec2 uv, float mod1, float mod2){
   vec2 block =floor(gl_FragCoord.xy/vec2(16*1.01*mod2));
   vec2 uv_noise = block / vec2(64);
-  uv_noise +=floor(vec2(mod1*0.3) * vec2(12345.0, 3543.0))/vec2(sqrt(mod1));
+  uv_noise +=floor(vec2(mod1*10.3) * vec2(12345.0, 3543.0))/vec2(sqrt(mod1));
   return uv_noise;
 
 }
 
 vec4 glitch(vec2 uv_noise, vec2 uv,  vec4 v1In, vec4 v2In, float mod1, sampler2D tex1, sampler2D tex2){
-  float block_thres =pow(fract(mod1+1999.0), 2.0)*0.02;
-  float line_thres =pow(fract(mod1+ 33336), 3.0)* 0.7;
+  //https://www.shadertoy.com/view/Md2GDw
+  //vec2 block = floor(fragCoord.xy / vec2(16));
+  //vec2 uv_noise = block / vec2(64);
+  uv_noise += floor(vec2(iRandom, iRandom) * vec2(1234.0, 3543.0)) / vec2(64);
+  float block_thres =pow(fract(mod1+1234.0456), 2.0)*0.3;
+  float line_thres =pow(fract(mod1+ 2229.04), 3.0)* 0.7;
 
   vec2 uv_r =uv, uv_g=uv, uv_b=uv;
 
@@ -37,31 +41,36 @@ vec4 glitch(vec2 uv_noise, vec2 uv,  vec4 v1In, vec4 v2In, float mod1, sampler2D
       v2In.g <line_thres){
     vec2 dist = (fract(uv_noise)-0.5)*0.3;
     uv_r +=dist*0.1;
-    uv_g +=dist*1.2;
+    uv_g +=dist*0.2;
     uv_b +=dist*0.125;
       }
 
+
+
   vec4 glitchText=v1In;
+  glitchText.r = texture(tex2, uv_r).r;
+  glitchText.g = texture(tex2, uv_g).g;
+  glitchText.b = texture(tex2, uv_b).b;
 	// loose luma for some blocks
 	if (texture2D(tex1, uv_noise).g > block_thres)
-		glitchText.rgb = v2In.gbg;
+		glitchText.rgb = v1In.ggg;
 
         	// discolor block lines
 	if (texture2D(tex2, vec2(uv_noise.y, 0.0)).b * 2.5 <  line_thres)
-          glitchText.rgb = vec3(0.0, dot(glitchText.rgb, vec3(1.0)), 0.0);
+          glitchText.rgb = vec3(0.0, dot(glitchText.rgb, vec3(1.0)), 1.10);
 
 
 	// interleave lines in some blocks
 	if (texture2D(tex1, uv_noise).g * 0.05  > block_thres ||
-		texture(tex1, vec2(uv_noise.y, 0.0)).g * 2.5 < line_thres) {
-		float line = fract(gl_FragCoord.y / 3.0);
-		vec3 mask = vec3(3.0, 0.0, 0.0);
+		texture(tex1, vec2(uv_noise.y, 0.0)).r * 2.5 > line_thres) {
+		float line = fract(gl_FragCoord.x / 3.0);
+		vec3 mask = vec3(1.0, 0.0, 0.0);
 		if (line > 0.333){
                   //discard;
-                  mask = vec3(100.0, 3.0, 0.0);
+                  mask = vec3(1.0, 1.0, 0.0);
                 }
 		if (line > 0.666)
-			mask = vec3(0.0, 0.0, 3.0);
+			mask = vec3(0.0, 1.0, 1.0);
 
 		glitchText.xyz *= mask;
 	}
@@ -139,9 +148,9 @@ void main(void) {
   vec2 uv = (gl_FragCoord.xy/ iResolution.xy);
   vec2 uv2 = uv;
   uv.y=1.0-uv.y*1;
-  float sclr=10000;//*iFloat1;
-  uv=floor(uv * (sclr+iRandom*iFloat1 )) / ( sclr+iRandom*iFloat1 );
-  vec2 uv_noise=noiseUV(uv, 1, 0.1/(iFloat2));
+  float sclr=1000*iFloat2;//*iFloat1;
+  //uv=floor(uv * (sclr+iFloat1/10 )) / ( sclr+iFloat1 );
+  vec2 uv_noise=noiseUV(uv, 1, 0.1/(iFloat1));
   vec2 dsUV=distortUV(uv, uv, iChannel2, 2);
 
 
@@ -166,6 +175,14 @@ void main(void) {
   vec4 ic5d=texture2D(iChannel5, dsUV);
   vec4 ic6d=texture2D(iChannel6, dsUV);
   vec4 ic7d=texture2D(iChannel7, dsUV);
+
+
+  vec4 ic2g=glitch(uv_noise, uv, ic2, ic3, iFloat1, iChannel3, iChannel2);
+  vec4 ic3g=glitch(dsUV, uv, ic3, ic3, iFloat1, iChannel3, iChannel3);
+  vec4 ic4g=texture2D(iChannel4, dsUV);
+  vec4 ic5g=texture2D(iChannel5, dsUV);
+  vec4 ic6g=texture2D(iChannel6, dsUV);
+  vec4 ic7g=texture2D(iChannel7, dsUV);
   vec4 iText_texture=texture2D(iText, uv);
 
   int set_switch=int(floor(iFloat15));
@@ -184,9 +201,10 @@ void main(void) {
     o1=mix(ic1, ic2, smoothstep(1, 0, p1));
     o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 0);
     //gb2 tulee mukaan
-    vec4 o2= colorRemoval(ic2, ic3n, 1, 1, 0.6, 0.93, 1);
+    vec4 o2= colorRemoval(ic2, ic3g, 1, 1, 0.6, 0.93, 1);
     op=o2;
     break;
     }
+    //op=ic2g;
     //op =o1b;//iChannel6_texture;//mixxx;// ich[timefloor];//mixxx;//mix(text, ppp, cos(iGlobalTime*1.41)+data2_0);//ppp;//text;//iChannel1_texture;//iChannel1_texture;
 }

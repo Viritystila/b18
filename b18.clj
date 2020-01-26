@@ -254,7 +254,7 @@
        :in-amp [1]
        :in-note (->> ["nc2"]
                      (rep 8)
-                     (evr 2 [ "nc2" r  ["ng2" "nbb2" r r] "nc1"])
+                     (evr 2 [ "nd2" r  ["ng2" "nbb2" r r] "nc1"])
                      (evr 6 [ "nbb3" r  ["ng3" "nbb3" r r] "nc3"])
                      (evr 7 (fn [x] (fst 4 x)))
                      (evr 3 rev)
