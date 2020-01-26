@@ -50,5 +50,5 @@ pos.yz *= mat2(cos(time),sin(time),-sin(time),cos(time));
   //texCoordV=texCoordV*10/2;
   //texCoordV=xy;
 
-  gl_Position = vertexPosition_modelspace*vec4(1,1, 0.1, 0.1);//+iChannel6_texture;///sp; //sp;//vec4(texCoordV*1*iFloat1, 0.1, 0.1)*sp;///sp;// vertexPosition_modelspace*
+  gl_Position = vertexPosition_modelspace;//*iChannel6_texture;///sp; //sp;//vec4(texCoordV*1*iFloat1, 0.1, 0.1)*sp;///sp;// vertexPosition_modelspace*
 }
