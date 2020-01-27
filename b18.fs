@@ -5,7 +5,7 @@ vec2 distortUV(vec2 uv, vec2 nUV, sampler2D nstex ,  float ip1)
 {
   vec2 uv_orig=uv;
   float intensity = 0.1;
-  float scale = 0.05;//*ip1;
+  float scale = 0.05+ip1;
   float speed = 1.06;
 
 
@@ -19,7 +19,7 @@ vec2 distortUV(vec2 uv, vec2 nUV, sampler2D nstex ,  float ip1)
 }
 
 vec2 noiseUV(vec2 uv, float mod1, float mod2){
-  vec2 block =floor(gl_FragCoord.xy/vec2(16*1.01*mod2));
+  vec2 block =floor(gl_FragCoord.xy/vec2(16*1.1*mod2));
   vec2 uv_noise = block / vec2(64);
   uv_noise +=floor(vec2(mod1*10.3) * vec2(12345.0, 3543.0))/vec2(sqrt(mod1));
   return uv_noise;
@@ -30,7 +30,7 @@ vec4 glitch(vec2 uv_noise, vec2 uv,  vec4 v1In, vec4 v2In, float mod1, sampler2D
   //https://www.shadertoy.com/view/Md2GDw
   //vec2 block = floor(fragCoord.xy / vec2(16));
   //vec2 uv_noise = block / vec2(64);
-  uv_noise += floor(vec2(iRandom, iRandom) * vec2(1234.0, 3543.0)) / vec2(64);
+  uv_noise += floor(vec2(iRandom, iRandom*mod1) * vec2(1234.0, 3543.0)) / vec2(64);
   float block_thres =pow(fract(mod1+1234.0456), 2.0)*0.3;
   float line_thres =pow(fract(mod1+ 2229.04), 3.0)* 0.7;
 
@@ -62,12 +62,12 @@ vec4 glitch(vec2 uv_noise, vec2 uv,  vec4 v1In, vec4 v2In, float mod1, sampler2D
 
 	// interleave lines in some blocks
 	if (texture2D(tex1, uv_noise).g * 0.05  > block_thres ||
-		texture(tex1, vec2(uv_noise.y, 0.0)).r * 2.5 > line_thres) {
+		texture(tex1, vec2(uv_noise.x, 0.0)).r * 2.5 > line_thres) {
 		float line = fract(gl_FragCoord.x / 3.0);
-		vec3 mask = vec3(1.0, 0.0, 0.0);
+		vec3 mask = vec3(1.0, 1.0, 0.0);
 		if (line > 0.333){
                   //discard;
-                  mask = vec3(1.0, 1.0, 0.0);
+                  mask = vec3(3.0, 1.0, 0.0);
                 }
 		if (line > 0.666)
 			mask = vec3(0.0, 1.0, 1.0);
@@ -151,7 +151,7 @@ void main(void) {
   float sclr=1000*iFloat2;//*iFloat1;
   //uv=floor(uv * (sclr+iFloat1/10 )) / ( sclr+iFloat1 );
   vec2 uv_noise=noiseUV(uv, 1, 0.1/(iFloat1));
-  vec2 dsUV=distortUV(uv, uv, iChannel2, 2);
+  vec2 dsUV=distortUV(uv, uv, iChannel2, iFloat2);
 
 
   vec4 ic1=texture2D(iChannel1, uv2);
@@ -162,6 +162,7 @@ void main(void) {
   vec4 ic5=texture2D(iChannel5, uv);
   vec4 ic6=texture2D(iChannel6, uv);
   vec4 ic7=texture2D(iChannel7, uv);
+
   vec4 ic2n=texture2D(iChannel2, uv_noise);
   vec4 ic3n=texture2D(iChannel3, uv_noise);
   vec4 ic4n=texture2D(iChannel4, uv_noise);
@@ -178,7 +179,7 @@ void main(void) {
 
 
   vec4 ic2g=glitch(uv_noise, uv, ic2, ic3, iFloat1, iChannel3, iChannel2);
-  vec4 ic3g=glitch(dsUV, uv, ic3, ic3, iFloat1, iChannel3, iChannel3);
+  vec4 ic3g=glitch(dsUV, uv, ic3, ic3, iFloat1, iChannel3, iChannel2);
   vec4 ic4g=texture2D(iChannel4, dsUV);
   vec4 ic5g=texture2D(iChannel5, dsUV);
   vec4 ic6g=texture2D(iChannel6, dsUV);
@@ -190,8 +191,8 @@ void main(void) {
     switch(set_switch){
     case 0:
     float fade_size=2;
-    float p1= mix(fade_size, 0.0-fade_size, uv.x-0.05*iFloat1*5);
-    vec4 o1=mix(ic1, ic2, smoothstep(1, 0, p1));
+    float p1= mix(fade_size, 0.0-fade_size, uv.x-0.05*iFloat2*5);
+    vec4 o1=mix(ic1, ic3d, smoothstep(1, 0, p1));
     vec4 o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 0);
     op=o1b;
     break;

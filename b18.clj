@@ -70,8 +70,13 @@
 
 (osc/osc-send oc "/cutter/buf" "jkl1" "iChannel3")
 
+(osc/osc-send oc "/cutter/cut" tietoisku_1_fixed "tieto1" 0)
 
+(osc/osc-send oc "/cutter/cut" spede_fixed "spede1" 50900)
 
+(osc/osc-send oc "/cutter/cut" haps_fixed "haps1" 0)
+
+(osc/osc-send oc "/cutter/cut" onnep "onni1" 11800)
 
 
 (osc/osc-send oc "/cutter/set-float" "iFloat1" 50)
@@ -169,11 +174,13 @@
 
   (trg :uhsmp smp
        :in-trg
-       (->>  (slw 8 (fll 16 ["b k2" r "b oo" r "b k3" "b uhea" r]) )
+       (->>  (slw 16 (fll 16 ["b k2" r "b oo" r "b k3" "b uhea" r]) )
              (evr 5 [(rep 32 "b uh")])
              (evr 3 [r])
              (evr 4 acc)
              (rpl 6 [(rep 16 "b ahh")])
+             (rpl 10 ["buhea"])
+             (rpl 12 ["bk1"])
                                         ;(evr 8 (fn [x] (fst 32 x)))
              )
        :in-loop
@@ -189,7 +196,7 @@
             )
        :in-step
        (->> (rep 8 [2])
-                                        ;(evr 5 (fst 4 [(range -2.5 2.5 0.25) 2 2 1]))
+            (evr 5 (fst 4 [(range -2.5 2.5 0.25) 2 2 1]))
             )
        )
 
@@ -258,8 +265,8 @@
                      (evr 6 [ "nbb3" r  ["ng3" "nbb3" r r] "nc3"])
                      (evr 7 (fn [x] (fst 4 x)))
                      (evr 3 rev)
-                                        ;(evr 3 [(fll 8 ["ng2" "nc3" "nbb2" "nbb3"]) "nc1" "ng1" "nc2"])
-                                        ;(evr 4 [ "nc2" "nc1"  ["ng1" "nbb3"] "nc1"])
+                     ;(evr 3 [(fll 8 ["ng2" "nc3" "nbb2" "nbb3"]) "nc1" "ng1" "nc2"])
+                     (evr 4 [ "nc2" "nd2"  ["ng2" "nbb2"] "nc1"])
                                         ;(evr 5 [ "nc3" "nc2"  "ng3" "ng2"  "nbb3" "nbb2"  ["ng1" "nbb3"] "nc1"])
                      )
        :in-a [0.0825]
@@ -314,6 +321,91 @@
             :smp_obv)
 
 (remove-event-handler :smp_obv)
+
+
+
+
+;;;;; setti2
+;;;;Kick kurinaa sekaan
+;;; uheat pois
+
+(pause! :uhsmp)
+
+(do
+  (trg :kick kick)
+
+  (pause! :kick)
+
+  (trg :kick kick :in-trg
+       (->>  [[1 2 (rep 6 r)]  [3 4 r r]]
+             (rep 8)
+             ;(evr 2  [[2 r 3 4] r [5 6 r 7] 1 [8 9 1 2 ] r [2 3] r] )
+             ;(evr 1 (fn [x] (fst 2 x)))
+             (evr 2 acc )
+             )
+       :in-f3 (->> [ "fc1" "fg1" "f f1" "fbb1"]
+                   (rep 8)
+                   (evr 2  [ "fg1" "fc1" "f bb1" "ff1"]))
+       :in-f2 [200]
+       :in-f1 (fll 32 [1000 2000])
+       :in-amp [0.25])
+
+  (volume! :kick 0.125)
+
+  (play! :kick))
+
+(pause! :kick)
+
+(stp :kick)
+;;
+(do
+  (trg :nh hat2)
+
+  (pause! :nh)
+
+  (trg :nh hat2
+       :in-trg
+       (->> (rep 16 (fll 16 [0 2]))
+            (evr 2 [[1 0] r [1 0] r [1 0] r [1 0] 1])
+            (evr 6  (fn [x] (fst 4 x)))
+            ;(evr 8 [(rep 32 1)])
+            (evr 16 acc)
+                                        ;(evr 8 (fn [x] (fst 4 x)))
+            )
+                                        ;(acc [(rep 64 1)])
+       :in-attack [0.01 0.001]
+       :in-decay  (->> (rep 16 [0.001])
+                       (evr 2  [0.01]))
+       :in-amp [1])
+
+  (volume! :nh 0.25)
+
+  (play! :nh))
+
+(pause! :nh)
+
+(pause! :kick)
+
+
+(osc/osc-send oc "/cutter/set-float" "iFloat15" 1)
+
+;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;
+;;;Setti2 Video;;
+;;;;;;;;;;;;;;;;;
+;;jlk
+;;tietoisku
+;;spede
+
+
+
+
+
+
+
+
+
+
 
 
 ;;;;;;;;;;
