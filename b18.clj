@@ -82,7 +82,7 @@
 
 (osc/osc-send oc "/cutter/unloop-buf" "tieto1")
 
-(osc/osc-send oc "/cutter/l-buf" "tieto1" 1 120)
+(osc/osc-send oc "/cutter/l-buf" "tieto1" 1 115)
 
 ;;;;;;;;;; spede1
 (osc/osc-send oc "/cutter/cut" spede_fixed "spede1" 50900)
@@ -105,7 +105,7 @@
 (osc/osc-send oc "/cutter/buf" "tieto2" "iChannel8")
 
 
-(osc/osc-send oc "/cutter/stop-buf" "onni11")
+(osc/osc-send oc "/cutter/stop-buf" "tieto1")
 
 
 
