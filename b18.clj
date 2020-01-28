@@ -46,10 +46,10 @@
   (def onnep  "/mnt/Varasto/biisit/Viritystila/videos/onnenp.mp4")
 
   (def tietoisku_1_fixed  "/mnt/Varasto/biisit/Viritystila/videos/tietoisku_1_fixed.mp4")
+
+  (def tietoisku_2_fixed  "/mnt/Varasto/biisit/Viritystila/videos/tietoisku_2_fixed.mp4")
   )
 
-
-;(t/start "./b17.glsl" :width 1280 :height 800 :cams [0 1] :videos ["../videos/jkl_fixed.mp4" "../videos/onnenp.mp4" "../videos/tietoisku_1_fixed.mp4" "../videos/spede_fixed.mp4" "../videos/hapsiainen_fixed.mp4"])
 
 
 (osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1920 "height" 1080)
@@ -60,77 +60,53 @@
 
 (osc/osc-send oc "/cutter/set-fs-shader" fs )
 
+;;;; Cam 3
 (osc/osc-send oc "/cutter/cam" "3" "iChannel1")
 
 (osc/osc-send oc "/cutter/set-cam" "3" "fps" 1)
 
+;;;;; cam 0
 (osc/osc-send oc "/cutter/cam" "0" "iChannel2")
 
+;;;;;;; jkl
 (osc/osc-send oc "/cutter/cut" jkl_fixed "jkl1" 9925)
 
 (osc/osc-send oc "/cutter/buf" "jkl1" "iChannel3")
 
+;;;;;;;;;;; tieto1
 (osc/osc-send oc "/cutter/cut" tietoisku_1_fixed "tieto1" 0)
 
 (osc/osc-send oc "/cutter/buf" "tieto1" "iChannel4")
 
+(osc/osc-send oc "/cutter/fps-buf" "tieto1" 120)
+
+(osc/osc-send oc "/cutter/unloop-buf" "tieto1")
+
+(osc/osc-send oc "/cutter/l-buf" "tieto1" 1 120)
+
+;;;;;;;;;; spede1
 (osc/osc-send oc "/cutter/cut" spede_fixed "spede1" 50900)
 
 (osc/osc-send oc "/cutter/buf" "spede1" "iChannel5")
 
+;;;;;;;;;;; haps1
 (osc/osc-send oc "/cutter/cut" haps_fixed "haps1" 0)
 
 (osc/osc-send oc "/cutter/buf" "haps1" "iChannel6")
 
+;;;;;;;;;;;;;; onni1
 (osc/osc-send oc "/cutter/cut" onnep "onni1" 11800)
 
 (osc/osc-send oc "/cutter/buf" "onni1" "iChannel7")
 
+;;;;;;;;;;;;;;; tieto2
+(osc/osc-send oc "/cutter/cut" tietoisku_2_fixed "tieto2" 0)
+
+(osc/osc-send oc "/cutter/buf" "tieto2" "iChannel8")
+
 
 (osc/osc-send oc "/cutter/stop-buf" "onni11")
 
-
-(osc/osc-send oc "/cutter/set-float" "iFloat1" 50)
-
-(osc/osc-send oc "/cutter/cam" "0" "iChannel6")
-
-(osc/osc-send oc "/cutter/rec" "0" "suu1")
-
-(osc/osc-send oc "/cutter/set-cam" "0" "fps" 30)
-
-(osc/osc-send oc "/cutter/stop-cam" "0")
-
-(osc/osc-send oc "/cutter/buf" "suu1" "iChannel6")
-
-(osc/osc-send oc "/cutter/fps-buf" "suu1" 60)
-
-(osc/osc-send oc "/cutter/l-buf" "suu1" 30 70)
-
-(osc/osc-send oc "/cutter/unloop-buf" "suu1")
-
-(osc/osc-send oc "/cutter/stop-buf" "suu1")
-
-(osc/osc-send oc "/cutter/cut" spede_fixed "spede" 50900)
-
-(osc/osc-send oc "/cutter/b-buf" "spede")
-
-(osc/osc-send oc "/cutter/f-buf" "spede")
-
-(osc/osc-send oc "/cutter/i-buf" "spede" 100)
-
-(osc/osc-send oc "/cutter/unloop-buf" "spede")
-
-(osc/osc-send oc "/cutter/buf" "spede" "iChannel6")
-
-(osc/osc-send oc "/cutter/fps-buf" "spede" 120)
-
-(osc/osc-send oc "/cutter/l-buf" "spede" 110 150)
-
-(osc/osc-send oc "/cutter/cut" uni_fixed "uni1" 6460)
-
-(osc/osc-send oc "/cutter/buf" "uni1" "iChannel7")
-
-(osc/osc-send oc "/cutter/cut" haps_fixed "haps1" 0)
 
 
 (do
@@ -388,7 +364,7 @@
 
   (trg :nh hat2
        :in-trg
-       (->> (rep 16 (fll 16 [0 2]))
+       (->> (rep 16 (fll 16 [1 1]))
             (evr 2 [[1 0] r [1 0] r [1 0] r [1 0] 1])
             (evr 6  (fn [x] (fst 4 x)))
             ;(evr 8 [(rep 32 1)])
@@ -420,11 +396,23 @@
 ;;tietoisku
 ;;spede
 
-(on-trigger (get-trigger-val-id :kick :in-f3)
+(on-trigger (get-trigger-val-id :nh :in-trg)
             (fn [val]
-              (overtone.osc/osc-send oc "/cutter/set-float" "iFloat3" val)
+              (overtone.osc/osc-send oc "/cutter/set-float" "iFloat4" val)
               )
-            :kickf3)
+            :nhtrg)
+
+(remove-event-handler :nhtrg)
+
+
+(on-trigger (get-trigger-val-id :kick :in-trg)
+            (fn [val]
+              ;(println val)
+              (let []
+                   (overtone.osc/osc-send oc "/cutter/i-buf" "tieto1" (int 0))
+
+                   ))
+            :kicktrg)
 
 (remove-event-handler :kicktrg)
 

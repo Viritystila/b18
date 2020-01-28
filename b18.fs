@@ -224,7 +224,8 @@ void main(void) {
       op=o2;
       break;
     case 2:
-      vec4 o3 = mix(ic4, ic3d, 4+iFloat3);  //4 is good, d or g too
+      vec4 o3in=mix(ic3g, ic3d, iFloat4);
+      vec4 o3 = mix(ic4, o3in, 4+iFloat3);  //4 is good, d or g too
       o3=colorRemoval(o3, ic3, 1, 0.92, 0, 0, 0);
       op=o3;
     }
