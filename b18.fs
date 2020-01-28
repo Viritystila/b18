@@ -162,6 +162,12 @@ void main(void) {
   vec4 ic5=texture2D(iChannel5, uv);
   vec4 ic6=texture2D(iChannel6, uv);
   vec4 ic7=texture2D(iChannel7, uv);
+  vec4 ic8=texture2D(iChannel8, uv);
+  vec4 ic9=texture2D(iChannel9, uv);
+  vec4 ic10=texture2D(iChannel10, uv);
+  vec4 ic11=texture2D(iChannel11, uv);
+  vec4 ic12=texture2D(iChannel12, uv);
+  vec4 ic13=texture2D(iChannel13, uv);
 
   vec4 ic2n=texture2D(iChannel2, uv_noise);
   vec4 ic3n=texture2D(iChannel3, uv_noise);
@@ -169,6 +175,12 @@ void main(void) {
   vec4 ic5n=texture2D(iChannel5, uv_noise);
   vec4 ic6n=texture2D(iChannel6, uv_noise);
   vec4 ic7n=texture2D(iChannel7, uv_noise);
+  vec4 ic8n=texture2D(iChannel8, uv_noise);
+  vec4 ic9n=texture2D(iChannel9, uv_noise);
+  vec4 ic10n=texture2D(iChannel10, uv_noise);
+  vec4 ic11n=texture2D(iChannel11, uv_noise);
+  vec4 ic12n=texture2D(iChannel12, uv_noise);
+  vec4 ic13n=texture2D(iChannel13, uv_noise);
 
   vec4 ic2d=texture2D(iChannel2, dsUV);
   vec4 ic3d=texture2D(iChannel3, dsUV);
@@ -176,6 +188,12 @@ void main(void) {
   vec4 ic5d=texture2D(iChannel5, dsUV);
   vec4 ic6d=texture2D(iChannel6, dsUV);
   vec4 ic7d=texture2D(iChannel7, dsUV);
+  vec4 ic8d=texture2D(iChannel8, dsUV);
+  vec4 ic9d=texture2D(iChannel9, dsUV);
+  vec4 ic10d=texture2D(iChannel10, dsUV);
+  vec4 ic11d=texture2D(iChannel11, dsUV);
+  vec4 ic12d=texture2D(iChannel12, dsUV);
+  vec4 ic13d=texture2D(iChannel13, dsUV);
 
 
   vec4 ic2g=glitch(uv_noise, uv, ic2, ic3, iFloat1, iChannel3, iChannel2);
@@ -190,21 +208,25 @@ void main(void) {
 
     switch(set_switch){
     case 0:
-    float fade_size=2;
-    float p1= mix(fade_size, 0.0-fade_size, uv.x-0.05*iFloat2*5);
-    vec4 o1=mix(ic1, ic3d, smoothstep(1, 0, p1));
-    vec4 o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 0);
-    op=o1b;
-    break;
+      float fade_size=2;
+      float p1= mix(fade_size, 0.0-fade_size, uv.x-0.05*iFloat2*5);
+      vec4 o1=mix(ic1, ic3d, smoothstep(1, 0, p1));
+      vec4 o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 0);
+      op=o1b;
+      break;
     case 1:
-    fade_size=2;
-    p1= mix(fade_size, 0.0-fade_size, uv.x-0.05*iFloat1*5);
-    o1=mix(ic1, ic2, smoothstep(1, 0, p1));
-    o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 0);
-    //gb2 tulee mukaan
-    vec4 o2= colorRemoval(ic2, ic3g, 1, 1, 0.6, 0.93, 1);
-    op=o2;
-    break;
+      fade_size=2;
+      p1= mix(fade_size, 0.0-fade_size, uv.x-0.05*iFloat1*5);
+      o1=mix(ic1, ic2, smoothstep(1, 0, p1));
+      o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 0);
+      //gb2 tulee mukaan
+      vec4 o2= colorRemoval(ic2, ic3g, 1, 1, 0.6, 0.93, 1);
+      op=o2;
+      break;
+    case 2:
+      vec4 o3 = mix(ic4, ic3d, 4+iFloat3);  //4 is good, d or g too
+      o3=colorRemoval(o3, ic3, 1, 0.92, 0, 0, 0);
+      op=o3;
     }
     //op=ic2g;
     //op =o1b;//iChannel6_texture;//mixxx;// ich[timefloor];//mixxx;//mix(text, ppp, cos(iGlobalTime*1.41)+data2_0);//ppp;//text;//iChannel1_texture;//iChannel1_texture;

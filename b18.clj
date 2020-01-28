@@ -72,11 +72,22 @@
 
 (osc/osc-send oc "/cutter/cut" tietoisku_1_fixed "tieto1" 0)
 
+(osc/osc-send oc "/cutter/buf" "tieto1" "iChannel4")
+
 (osc/osc-send oc "/cutter/cut" spede_fixed "spede1" 50900)
+
+(osc/osc-send oc "/cutter/buf" "spede1" "iChannel5")
 
 (osc/osc-send oc "/cutter/cut" haps_fixed "haps1" 0)
 
+(osc/osc-send oc "/cutter/buf" "haps1" "iChannel6")
+
 (osc/osc-send oc "/cutter/cut" onnep "onni1" 11800)
+
+(osc/osc-send oc "/cutter/buf" "onni1" "iChannel7")
+
+
+(osc/osc-send oc "/cutter/stop-buf" "onni11")
 
 
 (osc/osc-send oc "/cutter/set-float" "iFloat1" 50)
@@ -337,22 +348,34 @@
   (pause! :kick)
 
   (trg :kick kick :in-trg
-       (->>  [[1 2 (rep 6 r)]  [3 4 r r]]
-             (rep 8)
+       (->>  ;[[1 2 (rep 6 r)]  [3 4 r r]]
+             [[1 2 (rep 6 r )]]
+             (rep 32)
+             (evr 3 [r])
+             (evr 2 [ r 3 4 r])
+             (rpl 16 [(rep 16 1)])
+             (rpl 20 [[1 2 (rep 6 r )] [r [14 50]]])
+             (rpl 28 [1 [4 5] (rep 4 r ) 3 30  ])
+             (evr 14 [r])
              ;(evr 2  [[2 r 3 4] r [5 6 r 7] 1 [8 9 1 2 ] r [2 3] r] )
-             ;(evr 1 (fn [x] (fst 2 x)))
-             (evr 2 acc )
+             (evr 32 (fn [x] (fst 2 x)))
+             ;(evr 2 acc )
              )
        :in-f3 (->> [ "fc1" "fg1" "f f1" "fbb1"]
                    (rep 8)
-                   (evr 2  [ "fg1" "fc1" "f bb1" "ff1"]))
-       :in-f2 [200]
-       :in-f1 (fll 32 [1000 2000])
+                   (evr 2  [ "fg1" "fc1" "f bb1" "ff1"])
+                   (evr 4  [ "fd2" "fd3" "f c2" "ff3"]))
+       :in-f2 (->> [200]
+                   (rep 32)
+                   (evr 22 [ 2000]))
+       :in-f1 (fll 32 [1000 2000 100])
        :in-amp [0.25])
 
   (volume! :kick 0.125)
 
-  (play! :kick))
+  (play! :kick)
+
+  )
 
 (pause! :kick)
 
@@ -387,7 +410,7 @@
 (pause! :kick)
 
 
-(osc/osc-send oc "/cutter/set-float" "iFloat15" 1)
+(osc/osc-send oc "/cutter/set-float" "iFloat15" 2)
 
 ;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;
@@ -397,12 +420,26 @@
 ;;tietoisku
 ;;spede
 
+(on-trigger (get-trigger-val-id :kick :in-f3)
+            (fn [val]
+              (overtone.osc/osc-send oc "/cutter/set-float" "iFloat3" val)
+              )
+            :kickf3)
+
+(remove-event-handler :kicktrg)
 
 
+(def kickbus (audio-bus-monitor (get-out-bus :kick)))
 
 
+(on-trigger (get-trigger-id :tick :in-trg)
+            (fn [val]
+              (let []
+                ;(println val)
+                (osc/osc-send oc "/cutter/set-float" "iFloat3" @kickbus) ))
+            :kickbus)
 
-
+(remove-event-handler :kickbus)
 
 
 
@@ -428,6 +465,8 @@
      :in-f3 (->>  [ "fc1"]
                  (rep 8)
                  (evr 2  [ ["fg0"] "fc1" "f bb1" "ff1"])
+
+                 (evr 2  [ ["fg0"] "fc1" "f bb4" "ff4"])
                  ))
 
 (trg! :kick :kickdist trg-fx-distortion)
