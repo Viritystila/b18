@@ -202,6 +202,7 @@ void main(void) {
   vec4 ic5g=texture2D(iChannel5, dsUV);
   vec4 ic6g=texture2D(iChannel6, dsUV);
   vec4 ic7g=texture2D(iChannel7, dsUV);
+  vec4 ic8g=glitch(dsUV, uv, ic8, ic8, iFloat1, iChannel3, iChannel8);
   vec4 iText_texture=texture2D(iText, uv);
 
   int set_switch=int(floor(iFloat15));
@@ -224,11 +225,15 @@ void main(void) {
       op=o2;
       break;
     case 2:
-      vec4 o3in=mix(ic3g, ic3d, iFloat4);
+      vec4 o3in=mix(ic3n, ic3g, iFloat4);
+      //vec4 o3in=mix(ipvid, ic3d, iFloat4);
       vec4 o3 = mix(ic4, o3in, 4+iFloat3);  //4 is good, d or g too
+      //vec4 o3b = mix(ic4, o3in, 4+iFloat3);  //4 is good, d or g too
       o3=colorRemoval(o3, ic3, 1, 0.92, 0, 0, 0);
+      //vec4 o3b=colorRemoval(ic8, ic3g, 1, 0.2, 0.5, 0.8, 0.3);
+      //o3=mix(o3b, o3, iFloat4);
       op=o3;
     }
-    //op=ic2g;
+    //op=ic8g;
     //op =o1b;//iChannel6_texture;//mixxx;// ich[timefloor];//mixxx;//mix(text, ppp, cos(iGlobalTime*1.41)+data2_0);//ppp;//text;//iChannel1_texture;//iChannel1_texture;
 }

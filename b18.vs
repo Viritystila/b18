@@ -13,6 +13,8 @@ float x = radius * cos(angle);
 float y = radius * sin(angle);
 vec2 xy = vec2(x,y);
 
+vec4 iChannel1_texture=texture2D(iChannel1, xy);
+
 vec4 iChannel6_texture=texture2D(iChannel6, xy);
 
 
@@ -46,9 +48,9 @@ pos.yz *= mat2(cos(time),sin(time),-sin(time),cos(time));
   norm.yz *= mat2(cos(time),sin(time),-sin(time),cos(time));
   vec4 sp=vec4(pos.x*iResolution.y/iResolution.x,pos.y, pos.z*.5+.5, 1);
   texCoordV=vec2(cos(a1)*cos(a2),sin(a2));
-  texCoordV=vec2(pos.x*iResolution.y/iResolution.x,pos.y*iResolution.x/iResolution.y);
-  //texCoordV=texCoordV*10/2;
+  texCoordV=vec2(pos.x*iResolution.y/iResolution.y,pos.y*iResolution.x/iResolution.y);
+  texCoordV=texCoordV;
   //texCoordV=xy;
 
-  gl_Position = vertexPosition_modelspace;//*iChannel6_texture;///sp; //sp;//vec4(texCoordV*1*iFloat1, 0.1, 0.1)*sp;///sp;// vertexPosition_modelspace*
+  gl_Position = vertexPosition_modelspace;//vec4(texCoordV*1*iFloat1, 0.1, 0.1)*sp;///sp;// vertexPosition_modelspace*
 }

@@ -5,12 +5,8 @@
         [trigger.speech]
         [trigger.samples]
         [trigger.trg_fx]
-        [overtone.core]
-        ;[overtone.osc]
-        )
-  (:require ;[cutter.interface :as t]
-            [overtone.osc :as osc])
-  )
+        [overtone.core])
+  (:require  [overtone.osc :as osc]))
 
 (future
   (println "Begin loading SuperDirt samples")
@@ -48,11 +44,13 @@
   (def tietoisku_1_fixed  "/mnt/Varasto/biisit/Viritystila/videos/tietoisku_1_fixed.mp4")
 
   (def tietoisku_2_fixed  "/mnt/Varasto/biisit/Viritystila/videos/tietoisku_2_fixed.mp4")
+
+  (def tieto2  "/mnt/Varasto/biisit/Viritystila/videos/tieto2.mp4")
   )
 
 
 
-(osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1920 "height" 1080)
+(osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1280 "height" 800)
 
 (osc/osc-send oc "/cutter/stop")
 
@@ -65,8 +63,13 @@
 
 (osc/osc-send oc "/cutter/set-cam" "3" "fps" 1)
 
+(osc/osc-send oc "/cutter/stop-cam" "3")
+
 ;;;;; cam 0
 (osc/osc-send oc "/cutter/cam" "0" "iChannel2")
+
+(osc/osc-send oc "/cutter/stop-cam" "0")
+
 
 ;;;;;;; jkl
 (osc/osc-send oc "/cutter/cut" jkl_fixed "jkl1" 9925)
@@ -100,12 +103,22 @@
 (osc/osc-send oc "/cutter/buf" "onni1" "iChannel7")
 
 ;;;;;;;;;;;;;;; tieto2
-(osc/osc-send oc "/cutter/cut" tietoisku_2_fixed "tieto2" 0)
+(osc/osc-send oc "/cutter/cut" tieto2 "tieto2" 1)
 
 (osc/osc-send oc "/cutter/buf" "tieto2" "iChannel8")
 
+(osc/osc-send oc "/cutter/fps-buf" "tieto2" 120)
+
+(osc/osc-send oc "/cutter/unloop-buf" "tieto2")
+
+(osc/osc-send oc "/cutter/l-buf" "tieto2" 0 75)
+
+(osc/osc-send oc "/cutter/f-buf" "tieto2")
+
 
 (osc/osc-send oc "/cutter/stop-buf" "tieto1")
+
+(osc/osc-send oc "/cutter/stop-buf" "jk1")
 
 
 
@@ -162,10 +175,10 @@
   (trg :uhsmp smp
        :in-trg
        (->>  (slw 16 (fll 16 ["b k2" r "b oo" r "b k3" "b uhea" r]) )
-             (evr 5 [(rep 32 "b uh")])
+             (evr 5 (acc [(rep 16 "b k1")]))
              (evr 3 [r])
              (evr 4 acc)
-             (rpl 6 [(rep 16 "b ahh")])
+             (rpl 6 [(rep 4 "b ahh")])
              (rpl 10 ["buhea"])
              (rpl 12 ["bk1"])
                                         ;(evr 8 (fn [x] (fst 32 x)))
@@ -192,11 +205,11 @@
         (->> (rep 8  [0])
              (evr 6 [1]))
         :in-decay-time [1.1]
-        :in-delay-time [0.01])
+        :in-delay-time [0.01]))
 
-  (play! :uhsmp)
+(play! :uhsmp)
 
-  )
+
 
 (pause! :uhsmp)
 
@@ -211,7 +224,7 @@
 
 
 ;;;;;;;;;;;;;;;;
-;;:gb:tä mukaan;
+;;:overp mukaan;
 ;;;;;;;;;;;;;;;;
 
 
@@ -220,70 +233,52 @@
 (println (map find-note-name (chord :c2 :7sus2)))
 
 (do
-  (trg :gb2 vintage-bass)
 
-  (pause! :gb2)
+  (trg :overp overpad)
+  (pause! :overp)
 
-  (trg :gb2
-       vintage-bass
-       :in-trg
-       (seq (map-in
-             (->>  ;[1 r [1 1 r r] 1]
-              [(rep 4 1)]
-              (rep 8)
-              (evr 2 [1 [r 1] 1 [1 1]])
-              (evr 3 (fn [x] (fst 2 x)))
-              (evr 4 (fn [x] (fst 3 x)))
-              ;(evr 1 [[(rep 8 1)] (rep 3 1)])
-                                        ;(evr 2 [1 [r r 1 1] 1 [1 1] ])
-                                        ;(rpl 2  [(rep 4 [(rep 4 1)])])
-                                        ;(rpl 3  [[1 1] r [1 1]  r [1 1 1 1] 1 1 1])
-                                        ;(evr 4  [[1 1] 1 [1 1] r [1 1 r r] 1 [ r r 1 1] 1])
-                                        ;(rpl 5  [1 1 1 [(rep 8 1)]])
-                                        ;(rpl 7  [ (acc [(rep 16 1)]) 1 r [1 1] [1 1 1 r] [1 1 1 1] [1 1 1 1] [1 1]])
-              )
-             scl 0.125))
-
-       :in-gate-select  [0]
-       :in-amp [1]
+  (trg :overp overpad
+       :in-trg (map-in (->>
+                     [1 1 1 1]
+                     (rep 32)
+                     (evr 5 fst)
+                     (evr 5 acc))
+                       scl 0.125)
+       :in-amp [0.2]
        :in-note (->> ["nc2"]
-                     (rep 8)
-                     (evr 2 [ "nd2" r  ["ng2" "nbb2" r r] "nc1"])
-                     (evr 6 [ "nbb3" r  ["ng3" "nbb3" r r] "nc3"])
-                     (evr 7 (fn [x] (fst 4 x)))
-                     (evr 3 rev)
+                     (rep 32)
+                     ;(evr 1 [ "nc2" r  ["ng2" "nbb2" r r] "nc1"])
+                     (evr 2 [ "nd2" r  ["ng2" "nbb2" r r] "nc2"])
+                     ;(evr 4 (fn [x] (fst 2 x)))
                      ;(evr 3 [(fll 8 ["ng2" "nc3" "nbb2" "nbb3"]) "nc1" "ng1" "nc2"])
-                     (evr 4 [ "nc2" "nd2"  ["ng2" "nbb2"] "nc1"])
-                                        ;(evr 5 [ "nc3" "nc2"  "ng3" "ng2"  "nbb3" "nbb2"  ["ng1" "nbb3"] "nc1"])
+                     (evr 6 [ "nc2" "nd2"  ["ng1" "nbb3"] "nc1"])
+                     (evr 12 [ "nc2" "nd2" "nd3" "nc2"])
+                     (evr 16  [ "nd2" "nc3"  "ng3" "ng2"  "nbb3" "nbb2"  ["ng1" r] "nc1"])
+                     (evr 32 slw)
                      )
-       :in-a [0.0825]
-       :in-d (->> [0.093]
-                  (rep 8)
-                  )
-       :in-s
-       (->> [0.05]
-            (rep 8)
-            )
-       :in-r
-       (->> [0.0275]
-            (rep 8)
-            )
-       )
+       :in-attack [0.01]
+       :in-decay  [0.1]
+       :in-sustain [1.1]
+       :in-release (->> [1.01]
+                        (rep 32)
+                        (rpl 32 [0 0 0 1]))
+       :in-gate-select [0])
 
-  (pause! :gb2))
+  )
 
-(play! :gb2)
 
-(trg! :gb2 :gbw2 trg-fx-echo
-      :in-amp [1]
+(play! :overp)
+
+(trg! :overp :ope trg-fx-echo
+      :in-amp [0.95]
       :in-decay-time [(/ 0.5625 1)]
-      :in-delay-time [(/ 0.5625 5)])
+      :in-delay-time [(/ 0.05625 5)])
 
-(trg! :gb2 :gb2d trg-fx-distortion2 :in-amount [0.8] )
+(trg! :overp :oped trg-fx-distortion2 :in-amount [0.92] )
 
-(stp :gb2d)
+(stp :gbw2)
 
-(volume! :gb2 1)
+(volume! :gb2 0.1)
 
 (stp :gb2)
 
@@ -295,7 +290,8 @@
 ;;;;;;;;;;;;;;;;;
 ;;;Setti1 Video;;
 ;;;;;;;;;;;;;;;;;
-(def gbm (audio-bus-monitor (get-out-bus :gb2)))
+(def overpm (audio-bus-monitor (get-out-bus :overp)))
+
 (def uhbm (audio-bus-monitor (get-out-bus :uhsmp)))
 
 
@@ -303,7 +299,7 @@
             (fn [val]
               (let []
                 ;(println val)
-                (osc/osc-send oc "/cutter/set-float" "iFloat1" @gbm)
+                (osc/osc-send oc "/cutter/set-float" "iFloat1" @overpm)
                 (osc/osc-send oc "/cutter/set-float" "iFloat2" @uhbm)))
             :smp_obv)
 
@@ -317,6 +313,8 @@
 ;;; uheat pois
 
 (pause! :uhsmp)
+
+(pause! :overp)
 
 (do
   (trg :kick kick)
@@ -347,11 +345,11 @@
        :in-f1 (fll 32 [1000 2000 100])
        :in-amp [0.25])
 
-  (volume! :kick 0.125)
+  (volume! :kick 0.125))
 
-  (play! :kick)
+(play! :kick)
 
-  )
+
 
 (pause! :kick)
 
@@ -364,10 +362,11 @@
 
   (trg :nh hat2
        :in-trg
-       (->> (rep 16 (fll 16 [1 1]))
-            (evr 2 [[1 0] r [1 0] r [1 0] r [1 0] 1])
+       (->> (rep 16 (fll 16 [1 0]))
+            (evr 2 [[1 1] r [1 1] r [1 1] r [1 1] 1])
             (evr 6  (fn [x] (fst 4 x)))
-            ;(evr 8 [(rep 32 1)])
+                                        ;(evr 8 [(rep 32 1)])
+            (rpl 16 [0 0 0 0 ])
             (evr 16 acc)
                                         ;(evr 8 (fn [x] (fst 4 x)))
             )
@@ -409,7 +408,8 @@
             (fn [val]
               ;(println val)
               (let []
-                   (overtone.osc/osc-send oc "/cutter/i-buf" "tieto1" (int 0))
+                (overtone.osc/osc-send oc "/cutter/i-buf" "tieto1" (int 0))
+                (overtone.osc/osc-send oc "/cutter/i-buf" "tieto2" (int 1))
 
                    ))
             :kicktrg)
@@ -462,6 +462,8 @@
 (pause! :kick)
 
 (play! :kick)
+
+(stp :kick)
 
 (on-trigger (get-trigger-val-id :kick :in-trg)
             (fn [val]
