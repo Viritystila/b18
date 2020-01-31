@@ -513,8 +513,9 @@
   (pause! :noish)
   (trg :noish noise-snare
        :in-trg (->>
-                [ [(rep 7 r) 1] 1 ]
+                [r]
                 (rep 8)
+                (evr 3  [ [(rep 7 r) 1] 1 ])
                 (evr 2  [1 r r [1 1]])
                 )
        :in-freq  [ "fc1" "fg1" "f d1" "fbb4"]
