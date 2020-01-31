@@ -43,9 +43,9 @@
 
   (def tietoisku_1_fixed  "/mnt/Varasto/biisit/Viritystila/videos/tietoisku_1_fixed.mp4")
 
-  (def tietoisku_2_fixed  "/mnt/Varasto/biisit/Viritystila/videos/tietoisku_2_fixed.mp4")
-
   (def tieto2  "/mnt/Varasto/biisit/Viritystila/videos/tieto2.mp4")
+
+  (def suu  "/mnt/Varasto/biisit/Viritystila/videos/suu.mp4")
   )
 
 
@@ -114,6 +114,13 @@
 (osc/osc-send oc "/cutter/l-buf" "tieto2" 0 75)
 
 (osc/osc-send oc "/cutter/f-buf" "tieto2")
+
+;;;;;;;;;;;;;; suu1
+(osc/osc-send oc "/cutter/cut" suu "suu1" 0)
+
+(osc/osc-send oc "/cutter/buf" "suu1" "iChannel9")
+
+
 
 
 (osc/osc-send oc "/cutter/stop-buf" "tieto1")
@@ -431,7 +438,90 @@
 
 
 
+;;;;Setti3-4
+;;;Setti3;;;;;
+(pause! :kick)
 
+(pause! :nh)
+
+(lss)
+
+(do
+  (trg :ksmp smp)
+
+  (pause! :ksmp)
+
+  (trg :ksmp smp
+       :in-trg (->> [r]
+                    (rep 32)
+                    (evr 16 [1 1 1 1 1 1 1 [(rep 64 1)]])
+                    (rpl 33 (slw 4 [1 1 1 1]))
+                                        ;(evr 8 [(rep 32 1)])
+                    )
+       :in-buf  ["b k1"]
+       (rep 15 [r])
+       ["b k2"]
+       (rep 15 [r])
+       ["b k3"]
+       (rep 16 [r])
+       :in-step (->> [2]
+                     (rep 32)
+                     (evr 24 (slw 1 [(sir 32 2.5 1 32)])) ;[2]
+)
+       :in-loop [1]
+       :in-start-pos  (->> [1]
+                           (rep 8)
+                           (evr 2 [(range 0 40000 5000)])
+                           )
+       :in-amp [1.0])
+
+  (volume! :ksmp 0.75)
+
+  (trg! :ksmp :ksmp_p trg-fx-pitch-shift
+        :in-pitch-ratio [0.9]
+        :in-pitch-dispersion [0.1])
+
+
+  (pause! :ksmp))
+
+(play! :ksmp)
+
+(do
+  (trg :sups supersaw)
+  (trg :sups supersaw
+       :in-freq  (->>
+                  (->> [ "fc0" "fg0" "f d0" "fbb0"]
+                           (rep 8)
+                           (evr 2  [ "fg0" "fc0" "f bb0" "fd0"])
+                           (evr 4  [ "fd1" "fd1" "f c1" "fd2"])
+                           (evr 3 rev)
+                           (rpl 7 [(range (first (mhz :c0)) (first (mhz :d3)) 10)] ))
+                  (rep 2)
+                  (evr 2 fst))
+       :in-amp [0.2]
+       )
+
+  (pause! :sups)
+
+  )
+
+(play! :sups)
+
+
+(do
+  (trg :noish noise-snare)
+  (pause! :noish)
+  (trg :noish noise-snare
+       :in-trg (->>
+                [ [(rep 7 r) 1] 1 ]
+                (rep 8)
+                (evr 2  [1 r r [1 1]])
+                )
+       :in-freq  [ "fc1" "fg1" "f d1" "fbb4"]
+       :in-attack [0.05])
+
+  )
+(play! :noish)
 
 ;;;;;;;;;;
 ;;testiä
