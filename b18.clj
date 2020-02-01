@@ -242,6 +242,7 @@
 (do
 
   (trg :overp overpad)
+
   (pause! :overp)
 
   (trg :overp overpad
@@ -283,11 +284,6 @@
 
 (trg! :overp :oped trg-fx-distortion2 :in-amount [0.92] )
 
-(stp :gbw2)
-
-(volume! :gb2 0.1)
-
-(stp :gb2)
 
 
 (osc/osc-send oc "/cutter/set-float" "iFloat15" 1)
@@ -352,7 +348,9 @@
        :in-f1 (fll 32 [1000 2000 100])
        :in-amp [0.25])
 
-  (volume! :kick 0.125))
+  (volume! :kick 0.075)
+
+  )
 
 (play! :kick)
 
@@ -383,9 +381,9 @@
                        (evr 2  [0.01]))
        :in-amp [1])
 
-  (volume! :nh 0.25)
+  (volume! :nh 0.25))
 
-  (play! :nh))
+(play! :nh)
 
 (pause! :nh)
 
@@ -573,13 +571,17 @@
                 (rep 8)
                 (evr 3  [ [(rep 7 r) 1] 1 ])
                 (evr 2  [1 r r [1 1]])
+                (rpl 4  [[(rep 4 1)] 1 r [1 1 r r]])
+                (evr 7  [(rep 16 1)])
                 )
        :in-freq  (->> ["fc6" "fg6" "f d6" "fbb6"]
                       (rep 32)
-                      (evr 2  ["fd8" "fg7" "f d5" "fbb7"] ))
+                      (evr 2  ["fd8" [ r r "fg7" "f d5"] r "fbb7"] ))
        :in-attack (->> [0.1]
                        (rep 8)
-                       ))
+                       (evr 8 [0.01])
+                       (rpl 4 [0.001])
+                       (rpl 5 [0.001])))
 
   )
 
@@ -594,16 +596,16 @@
 
   (trg :bassd smp
    :in-trg
-   (->>  [[r (rep 3 "b bd1") ]  [ "b sn1"  "b bd4"] [r r "b bd1" r] [ "b sn2" r "b bd1" r]]
+   (->>  [[r (rep 2 "b bd1") r ]  ["b sn1"  "b bd4"] [r r "b bd1" r] [ "b sn2" r "b bd1" r]]
          (rep 16)
-         (evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep 1 "b bd1") r] [ "b sn2" r "b bd1" r]])
+         ;(evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep 1 "b bd1") r] [ "b sn2" r "b bd1" r]])
                                         ;(evr 2 [[(rep 4 "b bd1")]   [(rep 4 "b sn1")] [r r  "b bass23" r] [ "b sn2" r "b bd1" r]])
                                         ;(evr 3 ["b bd1"  ["b bd0" "b sn1"] [(rep 4 "b bd2") ] [ [(rep 2 "b sn2")] r "b bd1" r]])
                                         ;(evr 4  ["b bd0"  "b sn2" [ "b bass23"  "b bass23" "b bd1" r] [ [(rep 4 "b sn1")] r "b bd1" r]])
                                         (evr 7  ["b bd1"   (acc [(rep 8 "b sn2")]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
 
          (evr 4  (sfl (fll 16 ["b bass20" r  "b sn1" r   "b bass23" r  "b sn0" r])))
-                                        ; (evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
+                                        (evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
                                         ;(evr 15 [(fll 16 [ "b bd1" "bsn1"])  [(rep 8 "b bd2") r] [(rep 4 "b bd2") (rep 4 "bbass15")] ])
                                         ;(rpl 11 [[(rep 4 "b bd1")]  "b sn1" [[(rep 1 "b bass20")] "b sn0" "b bd1" r] [ "b sn2" r "b bd1" "b bass23"]])
                                         ;(evr 1 acc)
@@ -612,11 +614,11 @@
 
    :in-step (->> [2]
                  (rep 16)
-                                        ;(evr 2 [-2])
+                                        ;(evr 3 [-2])
                  )
    :in-loop (->> [0]
                  (rep 16)
-                                        ; (evr 2 [1])
+                                         ;(evr 3 [1])
                  )
    :in-start-pos [0]
    :in-buf ":in-trg"
@@ -630,3 +632,94 @@
 
 
 (play! :bassd)
+
+;;;;;;;;;;;,,
+;; Setti 7
+;;;;;;;;;;
+
+(do
+  (trg :ks1 ks1)
+
+  (pause! :ks1)
+
+  (trg :ks1
+       ks1
+       :in-trg
+       [(rep 16 "n a5")]
+       [(rep 16 "n b5")]
+       [(rep 16 "n d5")]
+       [(rep 2 "n e4")  (rep 2 "n c#3")  (rep 2 "n b2")  (rep 2 "n b1")]
+       [(rep 16  "n b1")]
+       [(rep 16 "n d1")]
+       [(rep 16 "n a1")]
+       (fst 1 ["n c#2" "n e3" "n b3" "n b2"])
+       :in-dur [1.5]
+       :in-amp [1]
+       :in-note ":in-trg"
+       :in-decay [0.5]
+       )
+
+  (volume! :ks1 0.25)
+
+  (trg! :ks1 :ks1d trg-fx-feedback-distortion
+        :in-noise-rate [1]
+        :in-decay [0.2]
+        :in-delay-t [0.01]
+        :in-boost [0.91]
+        )
+
+  )
+
+(play! :ks1)
+
+(pause! :ks1)
+
+(stp :ks1d)
+
+
+(do
+  (trg :vb vintage-bass)
+
+  (pause! :vb)
+
+  (trg :vb
+       vintage-bass
+       :in-trg
+       [(rep 16 "n a5")]
+       [(rep 16 "n b5")]
+       [(rep 16 "n d5")]
+       [(rep 2 "n e4")  (rep 2 "n c#3")  (rep 2 "n b2")  (rep 2 "n b1")]
+       [(rep 16  "n b1")]
+       [(rep 16 "n d1")]
+       [(rep 16 "n a1")]
+       (fst 1 ["n c#2" "n e3" "n b3" "n b2"])
+                                        ;[(rep 16  "n e3")]
+                                        ;[(rep 16 "n b3")]
+                                        ;[(rep 16 "n c4")]
+                                        ;(fst 1 ["n c#2" "n e2" "n b3" "n b4"])
+       :in-gate-select  (rep 3 [0] ) [1 0]    ;(rep 4 [0])
+       :in-amp [0.8]
+       :in-note  ":in-trg"
+       :in-a [0.001]
+       :in-d [0.93]
+       :in-s [0.945]
+       :in-r [3.85])
+
+  (volume! :vb 0.5)
+
+  (trg! :vb :distro trg-fx-distortion2 :in-amount [0.65])
+
+  (trg! :vb :reverb trg-fx-reverb :in-sig-a [0.13])
+
+  )
+
+
+(play! :vb)
+
+
+
+(lss)
+(pause! :ksmp)
+(pause! :sups)
+(pause! :softh)
+(pause! :bassd)
