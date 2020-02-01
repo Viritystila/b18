@@ -509,25 +509,6 @@
 (play! :sups)
 
 
- (do
-  (trg :softh soft-hat)
-  (pause! :softh)
-  (trg :softh noise-snare
-       :in-trg (->>
-                [r]
-                (rep 8)
-                (evr 3  [ [(rep 7 r) 1] 1 ])
-                (evr 2  [1 r r [1 1]])
-                )
-       :in-freq  ["fc6" "fg6" "f d6" "fbb6"]
-       :in-attack [0.1])
-
-  )
-
-(play! :softh)
-
-
-
 ;;;;;
 ;;;;;
 ;;Setti5;;;
@@ -571,3 +552,81 @@
   )
 
 (play! :tb303sn)
+
+
+;;;;;;;;;
+;;Setti 6
+;;;;;;;;;
+
+(lss)
+
+(pause! :tb303sn)
+
+
+
+ (do
+  (trg :softh soft-hat)
+  (pause! :softh)
+  (trg :softh noise-snare
+       :in-trg (->>
+                [r]
+                (rep 8)
+                (evr 3  [ [(rep 7 r) 1] 1 ])
+                (evr 2  [1 r r [1 1]])
+                )
+       :in-freq  (->> ["fc6" "fg6" "f d6" "fbb6"]
+                      (rep 32)
+                      (evr 2  ["fd8" "fg7" "f d5" "fbb7"] ))
+       :in-attack (->> [0.1]
+                       (rep 8)
+                       ))
+
+  )
+
+(play! :softh)
+
+
+(do
+  (trg :bassd smp)
+
+  (pause! :bassd)
+
+
+  (trg :bassd smp
+   :in-trg
+   (->>  [[r (rep 3 "b bd1") ]  [ "b sn1"  "b bd4"] [r r "b bd1" r] [ "b sn2" r "b bd1" r]]
+         (rep 16)
+         (evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep 1 "b bd1") r] [ "b sn2" r "b bd1" r]])
+                                        ;(evr 2 [[(rep 4 "b bd1")]   [(rep 4 "b sn1")] [r r  "b bass23" r] [ "b sn2" r "b bd1" r]])
+                                        ;(evr 3 ["b bd1"  ["b bd0" "b sn1"] [(rep 4 "b bd2") ] [ [(rep 2 "b sn2")] r "b bd1" r]])
+                                        ;(evr 4  ["b bd0"  "b sn2" [ "b bass23"  "b bass23" "b bd1" r] [ [(rep 4 "b sn1")] r "b bd1" r]])
+                                        (evr 7  ["b bd1"   (acc [(rep 8 "b sn2")]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
+
+         (evr 4  (sfl (fll 16 ["b bass20" r  "b sn1" r   "b bass23" r  "b sn0" r])))
+                                        ; (evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
+                                        ;(evr 15 [(fll 16 [ "b bd1" "bsn1"])  [(rep 8 "b bd2") r] [(rep 4 "b bd2") (rep 4 "bbass15")] ])
+                                        ;(rpl 11 [[(rep 4 "b bd1")]  "b sn1" [[(rep 1 "b bass20")] "b sn0" "b bd1" r] [ "b sn2" r "b bd1" "b bass23"]])
+                                        ;(evr 1 acc)
+                                        ;(evr 2 dcl)
+         )
+
+   :in-step (->> [2]
+                 (rep 16)
+                                        ;(evr 2 [-2])
+                 )
+   :in-loop (->> [0]
+                 (rep 16)
+                                        ; (evr 2 [1])
+                 )
+   :in-start-pos [0]
+   :in-buf ":in-trg"
+   )
+
+  (volume! :bassd 0.25)
+
+  (trg! :bassd :bassde trg-fx-echo :in-decay-time [(/ (/ 1 0.5626)  2)]  :in-delay-time  [(/ (/ 1 0.5626)  50)] :in-amp (evr 16 [0.125 0.5 0.75 1 0.75 0.5 1 0.125] (rep 16 [0.1])))
+
+  )
+
+
+(play! :bassd)
