@@ -488,145 +488,86 @@
 
 (do
   (trg :sups supersaw)
+  (pause! :sups)
+
   (trg :sups supersaw
        :in-freq  (->>
                   (->> [ "fc0" "fg0" "f d0" "fbb0"]
-                           (rep 8)
+                           (rep 16)
                            (evr 2  [ "fg0" "fc0" "f bb0" "fd0"])
                            (evr 4  [ "fd1" "fd1" "f c1" "fd2"])
                            (evr 3 rev)
-                           (rpl 7 [(range (first (mhz :c0)) (first (mhz :d3)) 10)] ))
+                           (evr 8 [(range (first (mhz :c0)) (first (mhz :d3)) 10)] ))
                   (rep 2)
-                  (evr 2 fst))
+                  (evr 16 fst))
        :in-amp [0.2]
        )
 
-  (pause! :sups)
 
   )
 
 (play! :sups)
 
 
-(do
-  (trg :noish noise-snare)
-  (pause! :noish)
-  (trg :noish noise-snare
+ (do
+  (trg :softh soft-hat)
+  (pause! :softh)
+  (trg :softh noise-snare
        :in-trg (->>
                 [r]
                 (rep 8)
                 (evr 3  [ [(rep 7 r) 1] 1 ])
                 (evr 2  [1 r r [1 1]])
                 )
-       :in-freq  [ "fc1" "fg1" "f d1" "fbb4"]
-       :in-attack [0.05])
+       :in-freq  ["fc6" "fg6" "f d6" "fbb6"]
+       :in-attack [0.1])
 
   )
-(play! :noish)
 
-;;;;;;;;;;
-;;testiä
-;;;;;;;
-;;kick;
-;;;;;;;
-(trg :kick kick
-     :in-trg (->> ;[120]
-                   [10 r [11 12 13 r] 14]
-              (rep 4 [(sfl (range 100))] [r])
-              ;(rep 4 )
-                  (rpl 1 [12 r r  [13 13 r r]])
-                  (evr 6 [[[133 11] r] r  [213 r] [312 31 r r]])
-                  (rpl 3 [[11 321 r 12 r] r [31 [41 31 12 2131]] r])
-                  ;(evr 2 [1 10 20 [0 100 0 100]])
-                  ;(evr 4 (acc 10  [(range 0 320 40)]))
-                  ;(evr 8 [(fll 8 [0 100])])
-                  )
-     :in-f3 (->>  [ "fc1"]
-                 (rep 8)
-                 (evr 2  [ ["fg0"] "fc1" "f bb1" "ff1"])
-
-                 (evr 2  [ ["fg0"] "fc1" "f bb4" "ff4"])
-                 ))
-
-(trg! :kick :kickdist trg-fx-distortion)
-
-(pause! :kick)
-
-(play! :kick)
-
-(stp :kick)
-
-(on-trigger (get-trigger-val-id :kick :in-trg)
-            (fn [val]
-              ;(println val)
-              (let []
-                ;(cutter.interface/i-buf "spede1" (int (* 1 val)))
-
-                   (overtone.osc/osc-send oc "/cutter/i-buf" "spede" (int val))
-
-                   ))
-            :kicktrg)
-
-(remove-event-handler :kicktrg)
+(play! :softh)
 
 
-(on-trigger (get-trigger-val-id :kick :in-f3)
-            (fn [val]
-              ;(cutter.interface/set-flt :iFloat1 val)
 
-              (overtone.osc/osc-send oc "/cutter/set-float" "iFloat1" val)
-
-              )
-            :kickf3)
-
-(remove-event-handler :kickf3)
+;;;;;
+;;;;;
+;;Setti5;;;
 
 
-;;;;;;;;
-;;snare;
-;;;;;;;;
-
-(trg :snare smp)
-
-(pause! :snare)
-
-(trg :snare smp
-     :in-trg (->>
-               [r 1 r [1 [1 1]]]
-              ;[1 r r r]
-              (rep 8)
-              (evr 4  [[(rep 8 1)] (rep 7 r)])
-              (evr 6  (acc [[(rep 8 1)] (rep 3 r)]))
-                  (rpl 2 [r 1 r [r r 1 1]])
-                  (rpl 3 [[r [1 1]]  [r 1]])
-                  ;(evr 2 [[r 1] r 1 r])
-                  ;(evr 4 [ [r 1] 4])
-                  )
-     :in-step [2]; [1 [1 1] 1.5 1.5]     ; [1.5] [1]       ;":in-trg2"
-     :in-loop [0]
-     :in-start-pos [0]
-     :in-buf (fll 128 ["b sn2" "bsn1" "bsn0"])
-     :in-amp [1]       ; [0.15]
-     )
-
-(play! :snare)
-
-(volume! :snare 0.125)
-
-(sta)
+(println (map find-note-name (chord :d2 :7sus2)))
 
 
-(on-trigger (get-trigger-val-id :snare :in-trg)
-            (fn [val]
-              ;(println val)
-              (let []
-                ;(cutter.interface/i-buf "spede1" (int (* 1 val)))
+(do
+  (trg :tb303sn tb303)
 
-                   (overtone.osc/osc-send oc "/cutter/i-buf" "suu1" 0)
+  (pause! :tb303sn)
 
-                   ))
-            :snaretrg)
+  (trg :tb303sn
+       tb303
+       :in-trg
+       (->>  ["n c3" ["n c3" "n d3"]]
+             (rep 16)
+             (evr 2  ["n e3" ["n c2"  "n c3"]])
+             (evr 3  [["n e2" "n a2" r r] [r "n d3" "n e3" "n d2"]])
+             (evr 4  ["n d3" ["nd3" "nb2" "ne3" "na2"]])
+             (evr 5  ["n a3" ["ne3" "na2" "nd3" "nc2"]])
+             (evr 1 slw)
+             ;(evr 2 slw)
+             ;(evr 4 rev)
+             ;(evr 3 fst)
+             )
+       :in-amp [1]
+       :in-note  ":in-trg"
+       :in-gate-select [1]
+       :in-attack [0.001]
+       :in-decay [0.019]
+       :in-sustain [0.25]
+       :in-release [5.73]
+       :in-r [0.9]
+       :in-cutoff [500]
+       :in-wave
+       (rep 4 [0])
+       )
 
-(remove-event-handler :snaretrg)
+  )
 
-(sta)
+(play! :tb303sn)
