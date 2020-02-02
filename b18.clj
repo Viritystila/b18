@@ -24,7 +24,7 @@
 
 (set-pattern-duration (/ 1 (* 1 0.5625)))
 
-(set-pattern-delay 0.7)
+(set-pattern-delay 0)
 
 (do
   (def fs  "/mnt/Varasto/biisit/Viritystila/b18/b18.fs" )
@@ -166,11 +166,14 @@
   (trg :tick ping :in-amp [0] :in-trg [(rep 60 1)])
   (play! :tick))
 
+(trg :sync ping :in-trg [1])
+
+(pause! :sync)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;SETTIIIIIIIIII;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Setti 1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Alkaa UHEA:lla
 ;;;;
 
@@ -185,15 +188,17 @@
              (evr 5 (acc [(rep 16 "b k1")]))
              (evr 3 [r])
              (evr 4 acc)
-             (rpl 6 [(rep 4 "b ahh")])
-             (rpl 10 ["buhea"])
-             (rpl 12 ["bk1"])
-                                        ;(evr 8 (fn [x] (fst 32 x)))
+             ;(rpl 6 [(rep 4 "b ahh")])
+             ;(rpl 10 ["buhea"])
+             ;(rpl 12 ["bk1"])
+             ;(evr 1 (fn [x] (fst 32 x)))
              )
        :in-loop
        (->> (rep 8 [0])
 
             (evr 5  [1])
+
+            ;(evr 1 [1])
             )
        :in-buf ":in-trg"
        :in-amp [0.75]
@@ -204,15 +209,22 @@
        :in-step
        (->> (rep 8 [2])
             (evr 5 (fst 4 [(range -2.5 2.5 0.25) 2 2 1]))
+            ;(evr 1 [-2])
             )
        )
+
+
+  (volume! :uhsmp 1.25)
+
 
   (trg! :uhsmp :uhsmpe trg-fx-echo
         :in-amp ;(evr 6 [1] (rep 32 [0]))
         (->> (rep 8  [0])
              (evr 6 [1]))
         :in-decay-time [1.1]
-        :in-delay-time [0.01]))
+        :in-delay-time [0.1])
+
+  )
 
 (play! :uhsmp)
 
@@ -220,7 +232,6 @@
 
 (pause! :uhsmp)
 
-(volume! :uhsmp 1.25)
 
 (stp :uhsmp)
 
@@ -259,10 +270,10 @@
                      (evr 2 [ "nd2" r  ["ng2" "nbb2" r r] "nc2"])
                      ;(evr 4 (fn [x] (fst 2 x)))
                      ;(evr 3 [(fll 8 ["ng2" "nc3" "nbb2" "nbb3"]) "nc1" "ng1" "nc2"])
-                     (evr 6 [ "nc2" "nd2"  ["ng1" "nbb3"] "nc1"])
-                     (evr 12 [ "nc2" "nd2" "nd3" "nc2"])
-                     (evr 16  [ "nd2" "nc3"  "ng3" "ng2"  "nbb3" "nbb2"  ["ng1" r] "nc1"])
-                     (evr 32 slw)
+                     ;(evr 6 [ "nc2" "nd2"  ["ng1" "nbb3"] "nc1"])
+                     ;(evr 12 [ "nc2" "nd2" "nd3" "nc2"])
+                     ;(evr 16  [ "nd2" "nc3"  "ng3" "ng2"  "nbb3" "nbb2"  ["ng1" r] "nc1"])
+                     ;(evr 32 slw)
                      )
        :in-attack [0.01]
        :in-decay  [0.1]
@@ -271,6 +282,15 @@
                         (rep 32)
                         (rpl 32 [0 0 0 1]))
        :in-gate-select [0])
+
+
+  (trg! :overp :ope trg-fx-echo
+        :in-amp [0.95]
+        :in-decay-time [(/ 0.5625 1)]
+        :in-delay-time [(/ 0.05625 5)])
+
+
+  (trg! :overp :oped trg-fx-distortion2 :in-amount [0.92] )
 
   )
 
@@ -309,56 +329,37 @@
 (remove-event-handler :smp_obv)
 
 
+;;Setti2
+;;Villen setti
+;;;
+;;overp mukana
+(pause! :uhsmp)
 
+(do
+  (trg :singlesmp smp)
+  (pause! :singlesmp)
+  (trg :singlesmp smp
+       :in-trg (->> [[(rep 2 "b bass23") (rep 2 2)] r r r]
+                    (rep 8)
+                    (evr 3  [[(rep 2 "b bass23") (rep 2 r)] r "b bass23" r]))
+       :in-loop (rep 8 [0]) [1] (rep 7 [0])
+       :in-buf ":in-trg"
+       :in-step  (rep 8 [2]) [2] (rep 7 [2])
+       :in-amp [1.0]))
 
-;;;;; setti2
-;;;;Kick kurinaa sekaan
-;;; uheat pois
+(play! :singlesmp)
+
+;;;;;Setti3
+;; Villen bittisetii
+
 
 (pause! :uhsmp)
 
 (pause! :overp)
 
-(do
-  (trg :kick kick)
-
-  (pause! :kick)
-
-  (trg :kick kick :in-trg
-       (->>  ;[[1 2 (rep 6 r)]  [3 4 r r]]
-             [[1 2 (rep 6 r )]]
-             (rep 32)
-             (evr 3 [r])
-             (evr 2 [ r 3 4 r])
-             (rpl 16 [(rep 16 1)])
-             (rpl 20 [[1 2 (rep 6 r )] [r [14 50]]])
-             (rpl 28 [1 [4 5] (rep 4 r ) 3 30  ])
-             (evr 14 [r])
-             ;(evr 2  [[2 r 3 4] r [5 6 r 7] 1 [8 9 1 2 ] r [2 3] r] )
-             (evr 32 (fn [x] (fst 2 x)))
-             ;(evr 2 acc )
-             )
-       :in-f3 (->> [ "fc1" "fg1" "f f1" "fbb1"]
-                   (rep 8)
-                   (evr 2  [ "fg1" "fc1" "f bb1" "ff1"])
-                   (evr 4  [ "fd2" "fd3" "f c2" "ff3"]))
-       :in-f2 (->> [200]
-                   (rep 32)
-                   (evr 22 [ 2000]))
-       :in-f1 (fll 32 [1000 2000 100])
-       :in-amp [0.25])
-
-  (volume! :kick 0.075)
-
-  )
-
-(play! :kick)
+(play! :overp)
 
 
-
-(pause! :kick)
-
-(stp :kick)
 ;;
 (do
   (trg :nh hat2)
@@ -372,7 +373,8 @@
             (evr 6  (fn [x] (fst 4 x)))
                                         ;(evr 8 [(rep 32 1)])
             (rpl 16 [0 0 0 0 ])
-            (evr 16 acc)
+            (evr 8 acc)
+            (evr 7 dcl)
                                         ;(evr 8 (fn [x] (fst 4 x)))
             )
                                         ;(acc [(rep 64 1)])
@@ -381,7 +383,9 @@
                        (evr 2  [0.01]))
        :in-amp [1])
 
-  (volume! :nh 0.25))
+  (volume! :nh 2.25)
+
+  )
 
 (play! :nh)
 
@@ -394,7 +398,7 @@
 
 ;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;
-;;;Setti2 Video;;
+;;;Setti3 Video;;
 ;;;;;;;;;;;;;;;;;
 ;;jlk
 ;;tietoisku
@@ -436,12 +440,62 @@
 
 
 
-;;;;Setti3-4
-;;;Setti3;;;;;
+;;;;Setti4
+;;Spede villeltä
+
+;Tähän pientä kickrumpua sybckkiin villen spedeen
+
+
+
+
+
+
+;;;Setti5;;;;;
 (pause! :kick)
 
 (pause! :nh)
 
+
+(do
+  (trg :kick kick)
+
+  (pause! :kick)
+
+  (trg :kick kick :in-trg
+       (->>  ;[[1 2 (rep 6 r)]  [3 4 r r]]
+             [[1 2 (rep 6 r )]]
+             (rep 32)
+             (evr 3 [r])
+             (evr 2 [ r 3 4 r])
+             (rpl 16 [(rep 16 1)])
+             (rpl 20 [[1 2 (rep 6 r )] [r [14 50]]])
+             (rpl 28 [1 [4 5] (rep 4 r ) 3 30  ])
+             (evr 14 [r])
+             ;(evr 2  [[2 r 3 4] r [5 6 r 7] 1 [8 9 1 2 ] r [2 3] r] )
+             (evr 2 (fn [x] (fst 2 x)))
+             ;(evr 1 acc )
+             )
+       :in-f3 (->> [ "fc1" "fg1" "f f1" "fbb1"]
+                   (rep 8)
+                   (evr 2  [ "fg1" "fc1" "f bb1" "ff1"])
+                   (evr 4  [ "fd2" "fd3" "f c2" "ff3"]))
+       :in-f2 (->> [200]
+                   (rep 32)
+                   (evr 22 [ 2000]))
+       :in-f1 (fll 32 [1000 2000 100])
+       :in-amp [0.25])
+
+  (volume! :kick 1.75)
+
+  )
+
+(play! :kick)
+
+
+
+(pause! :kick)
+
+(stp :kick)
 (lss)
 
 (do
@@ -473,7 +527,7 @@
                            )
        :in-amp [1.0])
 
-  (volume! :ksmp 0.75)
+  (volume! :ksmp 4.75)
 
   (trg! :ksmp :ksmp_p trg-fx-pitch-shift
         :in-pitch-ratio [0.9]
@@ -498,7 +552,7 @@
                            (evr 8 [(range (first (mhz :c0)) (first (mhz :d3)) 10)] ))
                   (rep 2)
                   (evr 16 fst))
-       :in-amp [0.2]
+       :in-amp [3]
        )
 
 
@@ -509,56 +563,21 @@
 
 ;;;;;
 ;;;;;
-;;Setti5;;;
+;;Setti6;;;
+(pause! :sups)
+(pause! :kick)
+(pause! :ksmp)
+                                        ;Villen rave
 
+                                        ; jotain biitiä videosynkkin
 
-(println (map find-note-name (chord :d2 :7sus2)))
-
-
-(do
-  (trg :tb303sn tb303)
-
-  (pause! :tb303sn)
-
-  (trg :tb303sn
-       tb303
-       :in-trg
-       (->>  ["n c3" ["n c3" "n d3"]]
-             (rep 16)
-             (evr 2  ["n e3" ["n c2"  "n c3"]])
-             (evr 3  [["n e2" "n a2" r r] [r "n d3" "n e3" "n d2"]])
-             (evr 4  ["n d3" ["nd3" "nb2" "ne3" "na2"]])
-             (evr 5  ["n a3" ["ne3" "na2" "nd3" "nc2"]])
-             (evr 1 slw)
-             ;(evr 2 slw)
-             ;(evr 4 rev)
-             ;(evr 3 fst)
-             )
-       :in-amp [1]
-       :in-note  ":in-trg"
-       :in-gate-select [1]
-       :in-attack [0.001]
-       :in-decay [0.019]
-       :in-sustain [0.25]
-       :in-release [5.73]
-       :in-r [0.9]
-       :in-cutoff [500]
-       :in-wave
-       (rep 4 [0])
-       )
-
-  )
-
-(play! :tb303sn)
 
 
 ;;;;;;;;;
-;;Setti 6
-;;;;;;;;;
+;;Setti 7
+;;;;;;;;;, jatkuu sujuvasti edellisestä
 
 (lss)
-
-(pause! :tb303sn)
 
 
 
@@ -582,6 +601,7 @@
                        (evr 8 [0.01])
                        (rpl 4 [0.001])
                        (rpl 5 [0.001])))
+  (volume! :softh 5)
 
   )
 
@@ -604,7 +624,7 @@
                                         ;(evr 4  ["b bd0"  "b sn2" [ "b bass23"  "b bass23" "b bd1" r] [ [(rep 4 "b sn1")] r "b bd1" r]])
                                         (evr 7  ["b bd1"   (acc [(rep 8 "b sn2")]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
 
-         (evr 4  (sfl (fll 16 ["b bass20" r  "b sn1" r   "b bass23" r  "b sn0" r])))
+         ;(evr 4  (sfl (fll 16 ["b bass20" r  "b sn1" r   "b bass23" r  "b sn0" r])))
                                         (evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
                                         ;(evr 15 [(fll 16 [ "b bd1" "bsn1"])  [(rep 8 "b bd2") r] [(rep 4 "b bd2") (rep 4 "bbass15")] ])
                                         ;(rpl 11 [[(rep 4 "b bd1")]  "b sn1" [[(rep 1 "b bass20")] "b sn0" "b bd1" r] [ "b sn2" r "b bd1" "b bass23"]])
@@ -624,7 +644,7 @@
    :in-buf ":in-trg"
    )
 
-  (volume! :bassd 0.25)
+  (volume! :bassd 5.25)
 
   (trg! :bassd :bassde trg-fx-echo :in-decay-time [(/ (/ 1 0.5626)  2)]  :in-delay-time  [(/ (/ 1 0.5626)  50)] :in-amp (evr 16 [0.125 0.5 0.75 1 0.75 0.5 1 0.125] (rep 16 [0.1])))
 
@@ -633,9 +653,24 @@
 
 (play! :bassd)
 
+;;;
+
+
+(pause! :kick)
+(pause! :sups)
+(pause! :ksmp)
+
+
+(println (map find-note-name (chord :d2 :7sus2)))
+
+
 ;;;;;;;;;;;,,
-;; Setti 7
+;; Setti 8
 ;;;;;;;;;;
+
+(pause! :bassd)
+(pause! :softh)
+
 
 (do
   (trg :ks1 ks1)
@@ -649,9 +684,9 @@
        [(rep 16 "n b5")]
        [(rep 16 "n d5")]
        [(rep 2 "n e4")  (rep 2 "n c#3")  (rep 2 "n b2")  (rep 2 "n b1")]
-       [(rep 16  "n b1")]
-       [(rep 16 "n d1")]
-       [(rep 16 "n a1")]
+       (sfl [(fll 32  [r r r "n b3"])])
+       [(rep 16 "n d3")]
+       [(rep 16 "n a3")]
        (fst 1 ["n c#2" "n e3" "n b3" "n b2"])
        :in-dur [1.5]
        :in-amp [1]
@@ -659,7 +694,7 @@
        :in-decay [0.5]
        )
 
-  (volume! :ks1 0.25)
+  (volume! :ks1 5.35)
 
   (trg! :ks1 :ks1d trg-fx-feedback-distortion
         :in-noise-rate [1]
@@ -705,9 +740,9 @@
        :in-s [0.945]
        :in-r [3.85])
 
-  (volume! :vb 0.5)
+  (volume! :vb 1.0)
 
-  (trg! :vb :distro trg-fx-distortion2 :in-amount [0.65])
+  (trg! :vb :distro trg-fx-distortion2 :in-amount [0.95])
 
   (trg! :vb :reverb trg-fx-reverb :in-sig-a [0.13])
 
@@ -716,10 +751,68 @@
 
 (play! :vb)
 
-
+(play! :ksmp)
 
 (lss)
 (pause! :ksmp)
 (pause! :sups)
 (pause! :softh)
 (pause! :bassd)
+(pause! :vb)
+(pause! :ks1)
+
+
+;;;tmp
+
+
+(println (map find-note-name (chord :d2 :7sus2)))
+
+
+(do
+  (trg :tb303sn tb303)
+
+  (pause! :tb303sn)
+
+  (trg :tb303sn
+       tb303
+       :in-trg
+       (->>  ["n c3" ["n c3" "n d3"]]
+             (rep 16)
+             (evr 2  ["n e3" ["n c2"  "n c3"]])
+             (evr 3  [["n e2" "n a2" r r] [r "n d3" "n e3" "n d2"]])
+             (evr 4  ["n d3" ["nd3" "nb2" "ne3" "na2"]])
+             (evr 5  ["n a3" ["ne3" "na2" "nd3" "nc2"]])
+             (evr 1 slw)
+             ;(evr 2 slw)
+             ;(evr 4 rev)
+             ;(evr 3 fst)
+             )
+       :in-amp [1]
+       :in-note  ":in-trg"
+       :in-gate-select [1]
+       :in-attack [0.001]
+       :in-decay [0.019]
+       :in-sustain [0.25]
+       :in-release [5.73]
+       :in-r [0.9]
+       :in-cutoff [500]
+       :in-wave
+       (rep 4 [0])
+       )
+  (volume! :tb303sn 2)
+
+  )
+
+(play! :tb303sn)
+
+
+
+(trg :singlesmp smp
+     :in-trg (acc 4 (fst 8 [2 r 3 4 5 r r 6])) (rep 7 [r])
+      (dcl 2 (fst 8 [1 2 3 4 5 6 7 8])) (rep 7 [r])
+      :in-loop (rep 8 [0]) [1] (rep 7 [0])
+     :in-buf (fll 8 ["b hc0" "b sn1" "b bd0"])
+     :in-step  (rep 8 [2]) [2] (rep 7 [2])
+     :in-amp [0.25])
+
+(stp :singlesmp)
