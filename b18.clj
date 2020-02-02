@@ -443,8 +443,27 @@
 ;;;;Setti4
 ;;Spede villeltä
 
-;Tähän pientä kickrumpua sybckkiin villen spedeen
+;Tähän pientä kickrumpua synckkiin villen spedeen
 
+
+(do
+  (trg :singlesmp smp)
+  (pause! :singlesmp)
+  (trg :singlesmp smp
+       :in-trg (->> [ r r r [(rep 2 "b sn0")] ]
+                    (rep 16)
+                    (evr 4  [r r r ["b sn0" r r "b sn3"]])
+                    (evr 16 [r r r r r r r ["b sn0" r "b sn2" "b sn3"]])
+                    ;(evr 3  [[(rep 2 "b bass23") (rep 2 r)] r "b bass23" r])
+                    )
+       :in-loop [0]
+       :in-buf ":in-trg"
+       :in-step [1]
+       :in-amp [1.5])
+
+  )
+
+(play! :singlesmp)
 
 
 
@@ -455,6 +474,7 @@
 
 (pause! :nh)
 
+(pause! :singlesmp)
 
 (do
   (trg :kick kick)
@@ -760,6 +780,7 @@
 (pause! :bassd)
 (pause! :vb)
 (pause! :ks1)
+(pause! :kick)
 
 
 ;;;tmp
@@ -776,13 +797,15 @@
   (trg :tb303sn
        tb303
        :in-trg
-       (->>  ["n c3" ["n c3" "n d3"]]
+       (->>  (fst ["n c0" ["n c0" "n d0"]])
              (rep 16)
-             (evr 2  ["n e3" ["n c2"  "n c3"]])
-             (evr 3  [["n e2" "n a2" r r] [r "n d3" "n e3" "n d2"]])
-             (evr 4  ["n d3" ["nd3" "nb2" "ne3" "na2"]])
-             (evr 5  ["n a3" ["ne3" "na2" "nd3" "nc2"]])
-             (evr 1 slw)
+             (evr 2  (fst ["n e0" ["n d0"  "n c0"]]))
+             (evr 1 fst)
+             (evr 4 rev)
+             ;(evr 3  [["n e2" "n a2" r r] [r "n d3" "n e3" "n d2"]])
+             ;(evr 4  ["n d3" ["nd3" "nb2" "ne3" "na2"]])
+             ;(evr 5  ["n a3" ["ne3" "na2" "nd3" "nc2"]])
+             ;(evr 1 slw)
              ;(evr 2 slw)
              ;(evr 4 rev)
              ;(evr 3 fst)
@@ -790,16 +813,19 @@
        :in-amp [1]
        :in-note  ":in-trg"
        :in-gate-select [1]
-       :in-attack [0.001]
-       :in-decay [0.019]
+       :in-attack [0.01]
+       :in-decay [0.19]
        :in-sustain [0.25]
-       :in-release [5.73]
+       :in-release [0.73]
        :in-r [0.9]
-       :in-cutoff [500]
+       :in-cutoff [600]
        :in-wave
-       (rep 4 [0])
+       (rep 4 [1])
+
        )
-  (volume! :tb303sn 2)
+
+
+  (volume! :tb303sn 10)
 
   )
 
@@ -816,3 +842,52 @@
      :in-amp [0.25])
 
 (stp :singlesmp)
+
+
+
+
+
+(println (map find-note-name (chord :d2 :7sus2)))
+
+
+(do
+  (trg :tb303sn tb303)
+
+  (pause! :tb303sn)
+
+  (trg :tb303sn
+       tb303
+       :in-trg
+       (->>  (fst ["n c3" ["n c3" "n d3"]])
+             (rep 16)
+             ;(evr 2  (fst ["n e0" ["n d0"  "n c0"]]))
+             ;(evr 1 slw)
+             (evr 4 rev)
+             ;(evr 3  [["n e2" "n a2" r r] [r "n d3" "n e3" "n d2"]])
+             ;(evr 4  ["n d3" ["nd3" "nb2" "ne3" "na2"]])
+             ;(evr 5  ["n a3" ["ne3" "na2" "nd3" "nc2"]])
+             ;(evr 1 slw)
+             ;(evr 2 slw)
+             ;(evr 4 rev)
+             ;(evr 3 fst)
+             )
+       :in-amp [1]
+       :in-note  ":in-trg"
+       :in-gate-select [1]
+       :in-attack [0.01]
+       :in-decay [0.19]
+       :in-sustain [0.25]
+       :in-release [0.73]
+       :in-r [0.9]
+       :in-cutoff [2600]
+       :in-wave
+       (rep 4 [0])
+
+       )
+
+
+  (volume! :tb303sn 8)
+
+  )
+
+(play! :tb303sn)
