@@ -229,17 +229,36 @@ void main(void) {
       op=o2;
       break;
     case 2:
-      vec4 o3in=mix(ic3n, ic3g, iFloat4);
+      vec4 o3in=mix(ic3d, ic8g, 1);
       //vec4 o3in=mix(ipvid, ic3d, iFloat4);
-      vec4 o3 = mix(ic4, o3in, 4+iFloat3);  //4 is good, d or g too
+      vec4 o3 = mix(ic1, o3in, 1);  //4 is good, d or g too
       //vec4 o3b = mix(ic4, o3in, 4+iFloat3);  //4 is good, d or g too
-      o3=colorRemoval(o3, ic3, 1, 0.92, 0, 0, 0);
+      o3=colorRemoval(o3, ic1, 1, 0.2, 0.5, 0.8, 0.3);
       //vec4 o3b=colorRemoval(ic8, ic3g, 1, 0.2, 0.5, 0.8, 0.3);
       //o3=mix(o3b, o3, iFloat4);
       op=o3;
       break;
-      //case 3;
-      //vec4 vmss=mix(ic8d, v0, 10);
+    case 3:
+      vec4 vmss=mix(ic5, pf, 0.75);
+      //o3=colorRemoval(o3, ic1, 1, 0.2, 0.5, 0.8, 0.3);
+      op=vmss;
+      break;
+    case 4:
+      vec4 o4in=mix(ic3n, ic3g, iFloat4);
+      //vec4 o3in=mix(ipvid, ic3d, iFloat4);
+      vec4 o4 = mix(ic4, o4in, 4+iFloat3);  //4 is good, d or g too
+      //vec4 o3b = mix(ic4, o3in, 4+iFloat3);  //4 is good, d or g too
+      o4=colorRemoval(o4, ic3, 1, 0.92, 0, 0, 0);
+      //vec4 o3b=colorRemoval(ic8, ic3g, 1, 0.2, 0.5, 0.8, 0.3);
+      //o3=mix(o3b, o3, iFloat4);
+      op=o4;
+      break;
+    case 5:
+      break;
+    case 6:
+      break;
+    case 7:
+      break;
 
     }
     //op=ic8g;
