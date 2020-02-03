@@ -239,14 +239,14 @@ void main(void) {
       op=o3;
       break;
     case 3:
-      vec4 vmss=mix(ic5, pf, 0.75);
-      //o3=colorRemoval(o3, ic1, 1, 0.2, 0.5, 0.8, 0.3);
-      op=vmss;
+      vec4 vmss=mix(ic5, pf, 0.75+iFloat5/90000); //60000
+      o3=colorRemoval(vmss, ic1, 1, 0.3, 0.0, 0.0, 0.93);
+      op=o3;
       break;
     case 4:
-      vec4 o4in=mix(ic3n, ic3g, iFloat4);
+      vec4 o4in=mix(ic3n, ic3g, 1);
       //vec4 o3in=mix(ipvid, ic3d, iFloat4);
-      vec4 o4 = mix(ic4, o4in, 4+iFloat3);  //4 is good, d or g too
+      vec4 o4 = mix(ic4, o4in, 4+iFloat6);  //4 is good, d or g too
       //vec4 o3b = mix(ic4, o3in, 4+iFloat3);  //4 is good, d or g too
       o4=colorRemoval(o4, ic3, 1, 0.92, 0, 0, 0);
       //vec4 o3b=colorRemoval(ic8, ic3g, 1, 0.2, 0.5, 0.8, 0.3);

@@ -461,8 +461,25 @@
 ;;;;Setti4 video
 ;;;;;;;;;;;;;;;
 
-;;;Setti5;;;;;
 
+(def smbbus (audio-bus-monitor (get-out-bus :singlesmp)))
+
+
+(on-trigger (get-trigger-val-id :singlesmp :in-trg)
+            (fn [val]
+              ;(println val)
+              (let []
+                (overtone.osc/osc-send oc "/cutter/i-buf" "spede1" (int 0))
+                (overtone.osc/osc-send oc "/cutter/set-float" "iFloat5" val)
+
+                   ))
+            :sings)
+
+(remove-event-handler :sings)
+
+;;;;;;;;;;;;;;;;;;;;
+;;;Setti5;;;;;
+;;;;;;;;;;;;;
 
 
 (pause! :kick)
@@ -571,7 +588,7 @@
         (rep 2)
         (evr 4 rev))
 
-       :in-amp [3]
+       :in-amp [2]
        )
 
 
