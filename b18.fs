@@ -204,8 +204,12 @@ void main(void) {
   vec4 ic7g=texture2D(iChannel7, dsUV);
   vec4 ic8g=glitch(dsUV, uv, ic8, ic8, iFloat1, iChannel3, iChannel8);
 
+
+  vec2 pfuv=uv;
+  pfuv.y=pfuv.x-pfuv.y;
   vec4 iText_texture=texture2D(iText, uv);
   vec4 pf=texture2D(iPreviousFrame, uv);
+  vec4 pf2=texture2D(iPreviousFrame, pfuv);
   vec4 pfn=texture2D(iPreviousFrame, uv_noise);
   vec4 pfg=texture2D(iPreviousFrame, dsUV);
 
@@ -254,10 +258,19 @@ void main(void) {
       op=o4;
       break;
     case 5:
+      vec4 o5pf = mix(ic10, pfg, 0.95);
+      vec4 o5=colorRemoval(o5pf, ic7, 1, 0.2, 0, 0, 0);
+      o5=mix(o5pf, ic10, 4);
+      op=o5;
       break;
     case 6:
+      vec4 o6=colorRemoval(ic9+ic2, ic1, 1, 0.052*iFloat7*30, 0, 0, 0);
+      o6=mix(o6, pf, iFloat7*85 );
+      op=o6;
       break;
     case 7:
+      op=waveColors(ic6, uv, 1, 0.1, 0.1, int(floor(iFloat8*iFloat8*iFloat8*30)));//ic6;
+      op=mix(op, pf2, 0.5*iFloat8*2);
       break;
 
     }

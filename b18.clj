@@ -89,10 +89,15 @@
 
 (osc/osc-send oc "/cutter/l-buf" "tieto1" 1 115)
 
+(osc/osc-send oc "/cutter/stop-buf" "tieto1")
+
 ;;;;;;;;;; spede1
 (osc/osc-send oc "/cutter/cut" spede_fixed "spede1" 50900)
 
 (osc/osc-send oc "/cutter/buf" "spede1" "iChannel5")
+
+(osc/osc-send oc "/cutter/stop-buf" "spede1")
+
 
 ;;;;;;;;;;; haps1
 (osc/osc-send oc "/cutter/cut" haps_fixed "haps1" 0)
@@ -117,10 +122,18 @@
 
 (osc/osc-send oc "/cutter/f-buf" "tieto2")
 
+(osc/osc-send oc "/cutter/stop-buf" "tieto2")
+
 ;;;;;;;;;;;;;; suu1
 (osc/osc-send oc "/cutter/cut" suu "suu1" 0)
 
 (osc/osc-send oc "/cutter/buf" "suu1" "iChannel9")
+
+(osc/osc-send oc "/cutter/fps-buf" "suu1" 120)
+
+(osc/osc-send oc "/cutter/unloop-buf" "suu1")
+
+(osc/osc-send oc "/cutter/l-buf" "suu1" 0 60)
 
 ;;;sormileikit
 
@@ -171,8 +184,10 @@
 (do
   (trg :tick ping)
   (pause! :tick)
-  (trg :tick ping :in-amp [0] :in-trg [(rep 60 1)])
+  (trg :tick ping :in-amp [0] :in-trg [(rep 1 60)])
   (play! :tick))
+
+(stp :tick)
 
 (trg :sync ping :in-trg [1])
 
@@ -363,9 +378,12 @@
 ;;;;;;
 (osc/osc-send oc "/cutter/set-float" "iFloat15" 1)
 
+
+
+;;;;;;;;;;;;;;
 ;;;;;Setti3
 ;; Villen bittisetii
-
+;;;;;;;;;;;;;;
 
 (pause! :uhsmp)
 
@@ -428,9 +446,10 @@
 
 (remove-event-handler :nhtrg)
 
-
+;;;;;;;;;;;;;;;;;;
 ;;;;Setti4
 ;;Spede villeltä
+;;;;;;;;;;;;;;;;;;;
 
 ;Tähän pientä kickrumpua synckkiin villen spedeen
 (osc/osc-send oc "/cutter/set-float" "iFloat15" 3)
@@ -499,9 +518,9 @@
              (rep 32)
              (evr 3 [r])
              (evr 2 [ r 3 4 r])
-             (rpl 16 [(rep  1 16)])
+             (rpl 16 [(rep  1 32)])
              (rpl 20 [[1 2 (rep r 6)] [r [14 50]]])
-             (rpl 28 [1 [4 5] (rep r 4) 3 30  ])
+             (rpl 28 [1 [4 5] [(rep r 4)] 3 30  ])
              (evr 14 [r])
              ;(evr 2  [[2 r 3 4] r [5 6 r 7] 1 [8 9 1 2 ] r [2 3] r] )
              (evr 2 (fn [x] (fst x 2)))
@@ -588,7 +607,7 @@
         (rep 2)
         (evr 4 rev))
 
-       :in-amp [2]
+       :in-amp [1.5]
        )
 
 
@@ -603,14 +622,17 @@
 ;;;Setti5 Video;;
 ;;;;;;;;;;;;;;;;;
 ;;jlk
-;;tietoisku
+;;tietoisku 1
+
+
+(osc/osc-send oc "/cutter/set-float" "iFloat15" 4)
+
 
 (on-trigger (get-trigger-val-id :kick :in-trg)
             (fn [val]
               ;(println val)
               (let []
                 (overtone.osc/osc-send oc "/cutter/i-buf" "tieto1" (int 0))
-                ;(overtone.osc/osc-send oc "/cutter/i-buf" "tieto2" (int 1))
 
                    ))
             :kicktrg)
@@ -624,19 +646,19 @@
 (on-trigger (get-trigger-id :tick :in-trg)
             (fn [val]
               (let []
-                ;(println val)
-                (osc/osc-send oc "/cutter/set-float" "iFloat3" @kickbus) ))
+                (println val)
+                (osc/osc-send oc "/cutter/set-float" "iFloat6" @kickbus) ))
             :kickbus)
 
 (remove-event-handler :kickbus)
 
 
 
-
-
 ;;;;;
-;;;;;
+;;;;;;;;;;;
 ;;Setti6;;;
+;;;;;;;;;;;;
+;;;;;;;;;;
 (pause! :sups)
 (pause! :kick)
 (pause! :ksmp)
@@ -647,6 +669,12 @@
 ;;;                                        ;Villen rave
 
  ;;;                                       ; jotain biitiä videosynkkin
+
+;;;;;;;;;;;;;;;,
+;;Setti 6 video
+;;;;;;;;;;
+;;Sormileikki
+;;onnepyörä
 
 
 
@@ -697,33 +725,27 @@
    :in-trg
    (->  [[r (rep "b bd1" 2) r ]  ["b sn1"  "b bd4"] [r r "b bd1" r] [ "b sn2" r "b bd1" r]]
          (rep 16)
-         ;(evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep 1 "b bd1") r] [ "b sn2" r "b bd1" r]])
-                                        ;(evr 2 [[(rep 4 "b bd1")]   [(rep 4 "b sn1")] [r r  "b bass23" r] [ "b sn2" r "b bd1" r]])
-                                        ;(evr 3 ["b bd1"  ["b bd0" "b sn1"] [(rep 4 "b bd2") ] [ [(rep 2 "b sn2")] r "b bd1" r]])
-                                        ;(evr 4  ["b bd0"  "b sn2" [ "b bass23"  "b bass23" "b bd1" r] [ [(rep 4 "b sn1")] r "b bd1" r]])
-                                        (evr 7  ["b bd1"   (acc [(rep "b sn2" 8)]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
-
-         ;(evr 4  (sfl (fll 16 ["b bass20" r  "b sn1" r   "b bass23" r  "b sn0" r])))
-                                        (evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
-                                        ;(evr 15 [(fll 16 [ "b bd1" "bsn1"])  [(rep 8 "b bd2") r] [(rep 4 "b bd2") (rep 4 "bbass15")] ])
-                                        ;(rpl 11 [[(rep 4 "b bd1")]  "b sn1" [[(rep 1 "b bass20")] "b sn0" "b bd1" r] [ "b sn2" r "b bd1" "b bass23"]])
-                                        ;(evr 1 acc)
-                                        ;(evr 2 dcl)
+         (evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bd1" 1) r] [ "b sn2" "b bass15" r r]])
+         ;;(evr 4 [[(rep "b bd1" 4)]   [(rep  "b sn1" 4)] [r r  "b bass23" r] [ "b sn2" r "b bd1" r]])
+         ;;(evr 7  ["b bd1"   (acc [(rep "b sn2" 8)]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
+         ;;(evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
+         ;;(evr 15 acc)
+         ;;(evr 4 rev)
          )
 
    :in-step (-> [2]
                  (rep 16)
-                                        ;(evr 3 [-2])
+                 ;;(evr 3 [-2])
                  )
    :in-loop (-> [0]
                  (rep 16)
-                                         ;(evr 3 [1])
+                 ;;(evr 3 [1])
                  )
    :in-start-pos [0]
    :in-buf ":in-trg"
    )
 
-  (volume! :bassd 5.25)
+  (volume! :bassd 4.25)
 
   (trg! :bassd :bassde trg-fx-echo
         :in-decay-time [(/ (/ 1 0.5626)  2)]
@@ -747,10 +769,38 @@
 
 (println (map find-note-name (chord :d2 :7sus2)))
 
+;;;;;;;;;;;;;;;;;;;;;;;
+;;;Setti 7 video
+;;;;;;;;;
+;;Suu
+
+(on-trigger (get-trigger-val-id :bassd :in-trg)
+            (fn [val]
+              ;(println val)
+              (let []
+                (overtone.osc/osc-send oc "/cutter/i-buf" "suu1" (int 0))
+
+                   ))
+            :bassdtrg)
+
+(remove-event-handler :bassdtrg)
+
+
+(def softhbus (audio-bus-monitor (get-out-bus :softh)))
+
+
+(on-trigger (get-trigger-id :tick :in-trg)
+            (fn [val]
+              (let []
+                ;(println @softhbus)
+                (osc/osc-send oc "/cutter/set-float" "iFloat7" @softhbus) ))
+            :softhbus)
+
+(remove-event-handler :softhbus)
 
 ;;;;;;;;;;;,,
 ;; Setti 8
-;;;;;;;;;
+;;;;;;;;;;;;
 (osc/osc-send oc "/cutter/set-float" "iFloat15" 7)
 
 (pause! :bassd)
@@ -765,25 +815,29 @@
   (trg :ks1
        ks1
        :in-trg
-       [(rep "n a5" 16)]
-       [(rep "n b5" 16) ]
-       [(rep "n d5" 16)]
+       [(rep "n a5" 8)]
+       [(rep "n b5" 8) ]
+       [(rep "n d5" 8)]
        [(rep "n e4" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]
        (sfl [(fll 32  [r r r "n b3"])])
        [(rep "n d3" 16)]
        [(rep "n a3" 16)]
        (fst ["n c#2" "n e3" "n b3" "n b2"] 2)
-       :in-dur [1.5]
+       :in-dur [10.5]
        :in-amp [1]
        :in-note ":in-trg"
-       :in-decay [0.5]
+       :in-decay (-> [0.75]
+                     (rep 8)
+                     (evr 4 [100]))
        )
 
-  (volume! :ks1 5.35)
+  (volume! :ks1 1.5)
 
   (trg! :ks1 :ks1d trg-fx-feedback-distortion
         :in-noise-rate [1]
-        :in-decay [0.2]
+        :in-decay (-> [0.2]
+                      (rep 8)
+                      (evr 4 [0.001]))
         :in-delay-t [0.01]
         :in-boost [0.91]
         )
@@ -848,9 +902,6 @@
 (pause! :kick)
 
 
-;;;tmp
-
-
 (println (map find-note-name (chord :d2 :7sus2)))
 
 
@@ -862,11 +913,13 @@
   (trg :tb303sn
        tb303
        :in-trg
-       (->  (fst ["n c0" ["n c0" "n d0"]])
+       (->  (fst ["n c2" r r ["n c2" "n d2"]])
              (rep 16)
-             (evr 2  (fst ["n e0" ["n d0"  "n c0"]]))
-             (evr 1 fst)
+             (evr 2  (fst ["n e2" ["n d3"  "n c2"] r r]))
+             (rpl 3  (fst [(rep "n e3" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]))
+             ;(evr 1 fst)
              (evr 4 rev)
+             ;(evr 1 acc)
              ;(evr 3  [["n e2" "n a2" r r] [r "n d3" "n e3" "n d2"]])
              ;(evr 4  ["n d3" ["nd3" "nb2" "ne3" "na2"]])
              ;(evr 5  ["n a3" ["ne3" "na2" "nd3" "nc2"]])
@@ -885,7 +938,7 @@
        :in-r [0.9]
        :in-cutoff [1600]
        :in-wave
-       (rep [1] 4)
+       (rep [0] 4)
 
        )
 
@@ -896,6 +949,27 @@
 
 (play! :tb303sn)
 
+
+;;;Setti 8 video
+;;;;;;
+;;;Hapsiainen
+
+(def vbbus (audio-bus-monitor (get-out-bus :vb)))
+
+
+(on-trigger (get-trigger-id :tick :in-trg)
+            (fn [val]
+              (let []
+                ;(println @softhbus)
+                (osc/osc-send oc "/cutter/set-float" "iFloat8" @vbbus) ))
+            :vbbus)
+
+(remove-event-handler :vbbus)
+
+
+
+;;;;;;;;;;;;;;;;
+;;;tmp
 
 
 (trg :singlesmp smp
@@ -923,7 +997,7 @@
   (trg :tb303sn
        tb303
        :in-trg
-       (->  (fst ["n c3" ["n c3" "n d3"]])
+       (->  (fst ["n c2" r r ["n c3" "n d2"]])
              (rep 16)
              ;(evr 2  (fst ["n e0" ["n d0"  "n c0"]]))
              ;(evr 1 slw)
