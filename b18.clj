@@ -213,7 +213,7 @@
        (->   (fll 16 ["b k2" r "b oo" r "b k3" "b uhea" r])
              (slw 16)
              ;;(evr 5 (acc [(rep "b k1" 16)]))
-             ;;(evr 3 [r])
+             (evr 3 [r])
              ;;(evr 4 acc)
              ;;(rpl 6 [(rep  "b ahh" 4)])
              ;;(rpl 10 ["buhea"])
@@ -746,12 +746,12 @@
     ;["bbd1"]
     [[r (rep "b bd1" 2) r ]  ["b sn1"  "b bd4"] [r r "b bd1" r] [ "b sn2" r "b bd1" r]]
          (rep 16)
-         ;(evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bd1" 1) r] [ "b sn2" "b bass15" r r]])
+         ;(evr 3  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bd1" 1) r] [ "b sn2" "b bass15" r r]])
          ;(evr 4 [[(rep "b bd1" 4)]   [(rep  "b sn1" 4)] [r r  "b bass23" r] [ "b sn2" r "b bd1" r]])
          ;;(evr 7  ["b bd1"   (acc [(rep "b sn2" 8)]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
          ;(evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
          ;;(evr 15 acc)
-         (evr 4 rev)
+         ;(evr 4 rev)
          )
    :in-step (-> [2]
                  (rep 16)
@@ -839,7 +839,7 @@
        :in-trg
        [(rep "n a5" 8)]
        [(rep "n b5" 8) ]
-       [(rep "n d5" 8)]
+       [(rep "n d5" 6)]
        [(rep "n e4" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]
        (sfl [(fll 32  [r r r "n b3"])])
        [(rep "n d3" 16)]
@@ -940,11 +940,11 @@
              (evr 2  (fst ["n e2" ["n d3"  "n c2"] r r]))
              (rpl 3  (fst [(rep "n e3" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]))
              ;(evr 1 fst)
-             (evr 4 rev)
+             ;(evr 4 rev)
              ;(evr 1 acc)
              ;(evr 3  [["n e2" "n a2" r r] [r "n d3" "n e3" "n d2"]])
              ;(evr 4  ["n d3" ["nd3" "nb2" "ne3" "na2"]])
-             ;(evr 5  ["n a3" ["ne3" "na2" "nd3" "nc2"]])
+             ;(evr 5  ["n a3" r r ["ne3" "na2" "nd3" "nc2"]])
              ;(evr 1 slw)
              ;(evr 2 slw)
              ;(evr 4 rev)
@@ -961,7 +961,6 @@
        :in-cutoff [1600]
        :in-wave
        (rep [0] 4)
-
        )
 
 
