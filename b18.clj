@@ -13,6 +13,9 @@
   (load-all-SuperDirt-samples)
   (println "Samples loaded"))
 
+
+;;Muista vb!!!!
+
 (defn add-tts-sample [name path nosamples]
 
   (println "Begin loading sample " name)
@@ -184,7 +187,7 @@
 (do
   (trg :tick ping)
   (pause! :tick)
-  (trg :tick ping :in-amp [0] :in-trg [(rep 1 60)])
+  (trg :tick ping :in-amp [0] :in-trg [(rep 1 20)])
   (play! :tick))
 
 (stp :tick)
@@ -209,13 +212,13 @@
        :in-trg
        (->   (fll 16 ["b k2" r "b oo" r "b k3" "b uhea" r])
              (slw 16)
-             (evr 5 (acc [(rep "b k1" 16)]))
-             (evr 3 [r])
-             (evr 4 acc)
-             (rpl 6 [(rep  "b ahh" 4)])
-             (rpl 10 ["buhea"])
-             (rpl 12 ["bk1"])
-             (evr 1 (fn [x] (fst x 32)))
+             ;;(evr 5 (acc [(rep "b k1" 16)]))
+             ;;(evr 3 [r])
+             ;;(evr 4 acc)
+             ;;(rpl 6 [(rep  "b ahh" 4)])
+             ;;(rpl 10 ["buhea"])
+             ;;(rpl 12 ["bk1"])
+             ;;(evr 1 (fn [x] (fst x 32)))
              )
        :in-loop
        (-> (rep [0] 8)
@@ -293,9 +296,9 @@
                      (evr 1 [ "nc2" r  ["ng2" "nbb2" r r] "nc1"])
                      (evr 2 [ "nd2" r  ["ng2" "nbb2" r r] "nc2"])
                      ;(evr 4 (fn [x] (fst  x 2)))
-                     ;(evr 3 [(fll 8 ["ng2" "nc3" "nbb2" "nbb3"]) "nc1" "ng1" "nc2"])
-                     ;(evr 6 [ "nc2" "nd2"  ["ng1" "nbb3"] "nc1"])
-                     ;(evr 12 [ "nc2" "nd2" "nd3" "nc2"])
+                     ;(evr 3 [(fll 8 ["ng2" "nc3" "nbb2" "nbb3"]) "nc1" "ng1" "nc2"]
+                     (evr 6 [ "nc2" "nd2"  ["ng1" "nbb3"] "nc1"])
+                     (evr 3 [ [r r r r "nc2" "nd2"] ["nd3" "nc2" r r r r]])
                      ;(evr 16  [ "nd2" "nc3"  "ng3" "ng2"  "nbb3" "nbb2"  ["ng1" r] "nc1"])
                      (evr 32 slw)
                      )
@@ -321,15 +324,11 @@
 
 (play! :overp)
 
-(trg! :overp :ope trg-fx-echo
-      :in-amp [0.95]
-      :in-decay-time [(/ 0.5625 1)]
-      :in-delay-time [(/ 0.05625 5)])
-
-(trg! :overp :oped trg-fx-distortion2 :in-amount [0.92] )
 
 
+(stp :ope)
 
+(stp :overp)
 
 ;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;
@@ -361,7 +360,7 @@
   (trg :singlesmp smp)
   (pause! :singlesmp)
   (trg :singlesmp smp
-       :in-trg (-> [[(rep  "b bass23"2) (rep 2 2)] r r r]
+       :in-trg (-> [[(rep  "b bass23"2) (rep r 2)] r r r]
                     (rep 8)
                     (evr 3  [[(rep "b bass23" 2) (rep r 2)] r "b bass23" r]))
        :in-loop (rep  [0] 8) ;[1] (rep [0] 7)
@@ -486,9 +485,9 @@
 
 (on-trigger (get-trigger-val-id :singlesmp :in-trg)
             (fn [val]
-              ;(println val)
+              ;(println (int val))
               (let []
-                (overtone.osc/osc-send oc "/cutter/i-buf" "spede1" (int 0))
+                (overtone.osc/osc-send oc "/cutter/i-buf" "spede1" (int val))
                 (overtone.osc/osc-send oc "/cutter/set-float" "iFloat5" val)
 
                    ))
@@ -532,7 +531,7 @@
                    (evr 4  [ "fd2" "fd3" "f c2" "ff3"]))
        :in-f2 (-> [200]
                    (rep 32)
-                   (evr 22 [ 2000]))
+                   (evr 16 [ 2000]))
        :in-f1 (fll 32 [1000 2000 100])
        :in-amp [0.25])
 
@@ -559,6 +558,7 @@
                     (rep 32)
                     (evr 16 [1 1 1 1 1 1 1 [(rep 1 64)]])
                     (rpl 33 (slw [1 1 1 1] 4))
+                    ;(evr 1 acc)
                                         ;(evr 8 [(rep 32 1)])
                     )
        :in-buf  ["b k1"]
@@ -646,7 +646,7 @@
 (on-trigger (get-trigger-id :tick :in-trg)
             (fn [val]
               (let []
-                (println val)
+                ;(println val)
                 (osc/osc-send oc "/cutter/set-float" "iFloat6" @kickbus) ))
             :kickbus)
 
@@ -669,6 +669,25 @@
 ;;;                                        ;Villen rave
 
  ;;;                                       ; jotain biitiä videosynkkin
+
+(do
+  (trg :singlesmp smp)
+  (pause! :singlesmp)
+  (trg :singlesmp smp
+       :in-trg (-> [ r r r [(rep "b sn0" 2)] ]
+                   (rep 16)
+                   (evr 4  [r r r ["b sn0" r r "b sn3"]])
+                   (evr 8 [r r r r r r r ["b sn0" r "b sn2" "b sn3"]])
+                                        ;(evr 3  [[(rep 2 "b bass23") (rep 2 r)] r "b bass23" r])
+                    )
+       :in-loop [0]
+       :in-buf ":in-trg"
+       :in-step [1]
+       :in-amp [1.5])
+
+  )
+
+(play! :singlesmp)
 
 ;;;;;;;;;;;;;;;,
 ;;Setti 6 video
@@ -723,16 +742,17 @@
 
   (trg :bassd smp
    :in-trg
-   (->  [[r (rep "b bd1" 2) r ]  ["b sn1"  "b bd4"] [r r "b bd1" r] [ "b sn2" r "b bd1" r]]
+   (->
+    ;["bbd1"]
+    [[r (rep "b bd1" 2) r ]  ["b sn1"  "b bd4"] [r r "b bd1" r] [ "b sn2" r "b bd1" r]]
          (rep 16)
-         (evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bd1" 1) r] [ "b sn2" "b bass15" r r]])
-         ;;(evr 4 [[(rep "b bd1" 4)]   [(rep  "b sn1" 4)] [r r  "b bass23" r] [ "b sn2" r "b bd1" r]])
+         ;(evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bd1" 1) r] [ "b sn2" "b bass15" r r]])
+         ;(evr 4 [[(rep "b bd1" 4)]   [(rep  "b sn1" 4)] [r r  "b bass23" r] [ "b sn2" r "b bd1" r]])
          ;;(evr 7  ["b bd1"   (acc [(rep "b sn2" 8)]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
-         ;;(evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
+         ;(evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
          ;;(evr 15 acc)
-         ;;(evr 4 rev)
+         (evr 4 rev)
          )
-
    :in-step (-> [2]
                  (rep 16)
                  ;;(evr 3 [-2])
@@ -759,6 +779,8 @@
 
 (play! :bassd)
 
+
+;(stp :bassd)
 ;;;
 
 
@@ -871,22 +893,21 @@
                                         ;[(rep 16 "n b3")]
                                         ;[(rep 16 "n c4")]
                                         ;(fst 1 ["n c#2" "n e2" "n b3" "n b4"])
-       :in-gate-select  (rep [0] 3) [1 0]    ;(rep 4 [0])
-       :in-amp [0.8]
+       :in-gate-select (rep [0] 3) [1 0] ;(rep 4 [0])
+       :in-amp [0.08]
        :in-note  ":in-trg"
-       :in-a [0.001]
-       :in-d [0.93]
-       :in-s [0.945]
-       :in-r [3.85])
+       :in-a [0.01]
+       :in-d [1.9]
+       :in-s [1.1]
+       :in-r [1.85])
 
-  (volume! :vb 0.2)
+  (volume! :vb 0.8)
 
-  (trg! :vb :distro trg-fx-distortion2 :in-amount [0.95])
+  (trg! :vb :distro trg-fx-distortion2 :in-amount [0.97])
 
-  (trg! :vb :reverb trg-fx-reverb :in-sig-a [0.13])
+  (trg! :vb :reverb trg-fx-reverb :in-sig-a [0.53])
 
   )
-
 
 (play! :vb)
 
@@ -901,6 +922,7 @@
 (pause! :ks1)
 (pause! :kick)
 
+(stp :vb)
 
 (println (map find-note-name (chord :d2 :7sus2)))
 
@@ -954,7 +976,7 @@
 ;;;;;;
 ;;;Hapsiainen
 
-(def vbbus (audio-bus-monitor (get-out-bus :vb)))
+(def vbbus (audio-bus-monitor (get-out-bus :tb303sn)))
 
 
 (on-trigger (get-trigger-id :tick :in-trg)
@@ -966,6 +988,7 @@
 
 (remove-event-handler :vbbus)
 
+@vbbus
 
 
 ;;;;;;;;;;;;;;;;
@@ -1030,3 +1053,7 @@
   )
 
 (play! :tb303sn)
+
+(stp :tb303sn)
+
+(sta)
