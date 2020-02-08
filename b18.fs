@@ -237,7 +237,7 @@ void main(void) {
       //vec4 o3in=mix(ipvid, ic3d, iFloat4);
       vec4 o3 = mix(ic1, o3in, 1);  //4 is good, d or g too
       //vec4 o3b = mix(ic4, o3in, 4+iFloat3);  //4 is good, d or g too
-      o3=colorRemoval(o3, ic1, 20, 0.15, 0.94, 0.98, 0.3);
+      o3=colorRemoval(o3, ic1, 10, 0.05, 0.94, 0.898, 0.43);
       //vec4 o3b=colorRemoval(ic8, ic3g, 1, 0.2, 0.5, 0.8, 0.3);
       //o3=mix(o3b, o3, iFloat4);
       op=o3;
@@ -258,9 +258,9 @@ void main(void) {
       op=o4;
       break;
     case 5:
-      vec4 o5pf = mix(ic10, pfg, 0.95);
-      vec4 o5=colorRemoval(o5pf, ic7, 1, 0.2, 0, 0, 0);
-      o5=mix(o5pf, ic10, 4);
+      vec4 o5pf = mix(ic2, pfg, 0.93595);
+      vec4 o5=colorRemoval(o5pf, ic6, 1, 0.5, 0, 0, 0);
+      o5=mix(o5pf, ic10, 5);
       op=o5;
       break;
     case 6:
@@ -270,7 +270,7 @@ void main(void) {
       break;
     case 7:
       op=waveColors(ic6, uv, 1, 0.1, 0.1, int(floor(iFloat8*iFloat8*iFloat8*300000)));//ic6;
-      op=mix(op, pf2, 0.5+iFloat8);
+      op=mix(op, pf2, 0.5+0.25+iFloat8);
       break;
 
     }

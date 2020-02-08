@@ -27,7 +27,7 @@
 
 (set-pattern-duration (/ 1 (* 1 0.5625)))
 
-(set-pattern-delay 0)
+(set-pattern-delay 1.5)
 
 (do
   (def fs  "/mnt/Varasto/biisit/Viritystila/b18/b18.fs" )
@@ -55,7 +55,7 @@
 
 
 
-(osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1280 "height" 800)
+(osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1920 "height" 1080)
 
 (osc/osc-send oc "/cutter/stop")
 
@@ -195,6 +195,9 @@
 (trg :sync ping :in-trg [1])
 
 (pause! :sync)
+
+(play! :sync)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;SETTIIIIIIIIII;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -214,14 +217,16 @@
              (slw 16)
              ;;(evr 5 (acc [(rep "b k1" 16)]))
              (evr 3 [r])
-             ;;(evr 4 acc)
-             ;;(rpl 6 [(rep  "b ahh" 4)])
-             ;;(rpl 10 ["buhea"])
-             ;;(rpl 12 ["bk1"])
+             (evr 4 [r])
+             (evr 5 [r])
+             ;(evr 1 acc)
+             (rpl 6 [(rep  "b ahh" 4)])
+             (rpl 10 ["buhea"])
+             (rpl 12 ["bk1"])
              ;;(evr 1 (fn [x] (fst x 32)))
              )
        :in-loop
-       (-> (rep [0] 8)
+       (-> (rep [1] 8)
 
             (evr 5  [1])
 
@@ -241,14 +246,14 @@
        )
 
 
-  (volume! :uhsmp 1.25)
+  (volume! :uhsmp 1.75)
 
 
   (trg! :uhsmp :uhsmpe trg-fx-echo
         :in-amp ;(evr 6 [1] (rep 32 [0]))
         (-> (rep [0] 6)
              (evr 6 [1]))
-        :in-decay-time [1.1]
+        :in-decay-time [1.051]
         :in-delay-time [0.1])
 
   )
@@ -290,17 +295,19 @@
                      (evr 5 fst)
                      (evr 5 acc))
                        scl 0.125)
-       :in-amp [0.2]
+       :in-amp [0.10]
        :in-note (-> ["nc2"]
-                     (rep 32)
-                     (evr 1 [ "nc2" r  ["ng2" "nbb2" r r] "nc1"])
-                     (evr 2 [ "nd2" r  ["ng2" "nbb2" r r] "nc2"])
+                    (rep 8)
+                    (cnc (rep ["nd2"] 8))
+                    (cnc (rep ["ng2"] 8))
+                     ;(evr 1 [ "nc2" r  ["ng2" "nbb2" r r] "nc1"])
+                     ;(evr 2 [ "nd2" r  ["ng2" "nbb2" r r] "nc2"])
                      ;(evr 4 (fn [x] (fst  x 2)))
-                     ;(evr 3 [(fll 8 ["ng2" "nc3" "nbb2" "nbb3"]) "nc1" "ng1" "nc2"]
-                     (evr 6 [ "nc2" "nd2"  ["ng1" "nbb3"] "nc1"])
-                     (evr 3 [ [r r r r "nc2" "nd2"] ["nd3" "nc2" r r r r]])
+                    (evr 3 [(fll 8 ["ng2" "nc5" "nbb4" "nbb3"]) "nc1" "ng1" "nc2"])
+                     ;(evr 6 [ "nc2" "nd2"  ["ng1" "nbb3"] "nc1"])
+                     ;(evr 3 [ [r r r r "nc2" "nd2"] ["nd3" "nc2" r r r r]])
                      ;(evr 16  [ "nd2" "nc3"  "ng3" "ng2"  "nbb3" "nbb2"  ["ng1" r] "nc1"])
-                     (evr 32 slw)
+                     ;(evr 1  acc)
                      )
        :in-attack [0.01]
        :in-decay  [0.1]
@@ -314,21 +321,16 @@
   (trg! :overp :ope trg-fx-echo
         :in-amp [0.95]
         :in-decay-time [(/ 0.5625 1)]
-        :in-delay-time [(/ 0.05625 5)])
+        :in-delay-time [(/ 0.05625 200)])
 
 
-  (trg! :overp :oped trg-fx-distortion2 :in-amount [0.92] )
+  (trg! :overp :oped trg-fx-distortion2 :in-amount [0.93] )
 
   )
 
-
 (play! :overp)
 
-
-
-(stp :ope)
-
-(stp :overp)
+(pause! :overp)
 
 ;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;
@@ -355,22 +357,35 @@
 ;;;
 ;;overp mukana
 (pause! :uhsmp)
+(pause! :overp)
 
 (do
   (trg :singlesmp smp)
   (pause! :singlesmp)
   (trg :singlesmp smp
-       :in-trg (-> [[(rep  "b bass23"2) (rep r 2)] r r r]
+       :in-trg (->   ;["b uh"]
+                    [[(rep  "b bass23" 1) (rep r 3)] r r r]
                     (rep 8)
-                    (evr 3  [[(rep "b bass23" 2) (rep r 2)] r "b bass23" r]))
+                    (evr 3  [[(rep "b bass23" 2) (rep r 2)] r "b bass23" r])
+                    (evr 2 [r])
+                    (evr 8  [[(rep "b bass23" 8) (rep r 2)] r "b bass23" r])
+                    )
        :in-loop (rep  [0] 8) ;[1] (rep [0] 7)
        :in-buf ":in-trg"
        :in-step  (rep [2] 8) ;[2] (rep [2] 7)
-       :in-amp [0.25])
+       :in-amp [0.35])
 
   )
 
 (play! :singlesmp)
+
+(do (trg :hz haziti-clap)
+    (pause! :hz)
+    (trg :hz haziti-clap
+         :in-trg  (-> [(rep 8 1)]
+                      (rep 8))))
+
+(play! :hz)
 
 ;;;;;
 ;;;Setti2 video
@@ -383,6 +398,7 @@
 ;;;;;Setti3
 ;; Villen bittisetii
 ;;;;;;;;;;;;;;
+(pause! :hz)
 
 (pause! :uhsmp)
 
@@ -404,30 +420,42 @@
        :in-trg
        (->  (fll 16 [1 0])
             (rep 16)
-            (evr 2 [[1 1] r [1 1] r [1 1] r [1 1] 1])
-            (evr 6  (fn [x] (fst x 4)))
+            ;(evr 2 [[1 1] r [1 1] r [1 1] r [1 1] 1])
+            ;(evr 6  (fn [x] (fst x 4)))
                                         ;(evr 8 [(rep 32 1)])
-            (rpl 16 [0 0 0 0])
+            ;(rpl 16 [0 0 0 0])
             (evr 8 acc)
-            (evr 7 dcl)
+            (rpl 8 fst)
+            (rpl 8 fst)
+            ;(evr 7 dcl)
             (evr 1 slw)
                                         ;(evr 8 (fn [x] (fst 4 x)))
             )
                                         ;(acc [(rep 64 1)])
-       :in-attack [0.01 0.001]
+       :in-attack (-> [0.01 0.001]
+                      (rep 16)
+                      (evr 2 [0.01 [(rep r 7) 1] ]))
        :in-decay  (->  [0.001]
                         (rep 16)
                        (evr 2  [0.01]))
        :in-amp [1])
 
-  (volume! :nh 2.25)
+  (volume! :nh 1.25)
+
+
+  (trg! :nh :nhe trg-fx-echo
+        :in-amp ;(evr 6 [1] (rep 32 [0]))
+        (-> (rep [1] 6)
+             (evr 6 [1]))
+        :in-decay-time [0.051]
+        :in-delay-time [0.01])
+
 
   )
 
 (play! :nh)
 
 (pause! :nh)
-
 
 (osc/osc-send oc "/cutter/set-float" "iFloat15" 2)
 
@@ -461,14 +489,27 @@
   (trg :singlesmp smp
        :in-trg (-> [ r r r [(rep "b sn0" 2)] ]
                    (rep 16)
+                   (evr 2 acc)
                    (evr 4  [r r r ["b sn0" r r "b sn3"]])
+                   ;(evr 2 fst)
                    (evr 8 [r r r r r r r ["b sn0" r "b sn2" "b sn3"]])
-                                        ;(evr 3  [[(rep 2 "b bass23") (rep 2 r)] r "b bass23" r])
+                   (evr 3  [[(rep "b bass23" 2) (rep r 2)] r "b bass23" r])
+                   (evr 3 (fn [x] (fst x 4)))
                     )
        :in-loop [0]
        :in-buf ":in-trg"
        :in-step [1]
        :in-amp [1.5])
+
+
+  (trg! :singlesmp :smpe trg-fx-echo
+        :in-amp ;(evr 6 [1] (rep 32 [0]))
+        (-> (rep [1] 6)
+             (evr 6 [1]))
+        :in-decay-time (-> [0.51]
+                           (rep 16)
+                           (rpl 16 [10]))
+        :in-delay-time [0.1])
 
   )
 
@@ -516,19 +557,22 @@
              [[1 2 (rep r 6)]]
              (rep 32)
              (evr 3 [r])
-             (evr 2 [ r 3 4 r])
-             (rpl 16 [(rep  1 32)])
-             (rpl 20 [[1 2 (rep r 6)] [r [14 50]]])
-             (rpl 28 [1 [4 5] [(rep r 4)] 3 30  ])
-             (evr 14 [r])
-             ;(evr 2  [[2 r 3 4] r [5 6 r 7] 1 [8 9 1 2 ] r [2 3] r] )
+             (evr 4 [r])
+             ;(evr 2 [ r 3 4 r])
+             ;(rpl 1 [(rep 1 32)])
+             (rpl 22 [[1 2 (rep r 6)] [r [14 50]]])
+             ;(rpl 28 [1 [4 5] [(rep r 4)] 3 30  ])
+             ;(evr 14 [r])
+             (evr 16 [[2 r 3 4] r [5 6 r 7] 1 [8 9 1 2 ] r [2 3] r] )
              (evr 2 (fn [x] (fst x 2)))
-             ;(evr 1 acc )
+             ;(evr 1 fst)
              )
        :in-f3 (-> [ "fc1" "fg1" "f f1" "fbb1"]
-                   (rep 8)
-                   (evr 2  [ "fg1" "fc1" "f bb1" "ff1"])
-                   (evr 4  [ "fd2" "fd3" "f c2" "ff3"]))
+                  (rep 8)
+                  (evr 1 sfl)
+                  (evr 2  [ "fg1" "fc1" "f bb1" "ff1"])
+                  (evr 4  [ "fd2" "fd3" "f c2" "ff3"])
+                   )
        :in-f2 (-> [200]
                    (rep 32)
                    (evr 16 [ 2000]))
@@ -556,8 +600,8 @@
   (trg :ksmp smp
        :in-trg (-> [r]
                     (rep 32)
-                    (evr 16 [1 1 1 1 1 1 1 [(rep 1 64)]])
-                    (rpl 33 (slw [1 1 1 1] 4))
+                    ;(evr 16 [1 1 1 1 1 1 1 [(rep 1 64)]])
+                    ;(rpl 33 (slw [1 1 1 1] 4))
                     ;(evr 1 acc)
                                         ;(evr 8 [(rep 32 1)])
                     )
@@ -578,7 +622,7 @@
                            )
        :in-amp [1.0])
 
-  (volume! :ksmp 4.75)
+  (volume! :ksmp 5.75)
 
   (trg! :ksmp :ksmp_p trg-fx-pitch-shift
         :in-pitch-ratio [0.9]
@@ -601,13 +645,13 @@
             (rep 16)
             (evr 2  [ "fg0" "fc0" "f bb0" "fd0"])
             (evr 4  [ "fd1" "fd1" "f c1" "fd2"])
-            (evr 3 rev)
-            (evr 8 [(range  (mhz :c0)  (mhz :d3) 10)] )
+            ;(evr 3 rev)
+            ;(evr 1 fst)
+            ;(evr 8 [(range  (mhz :c0)  (mhz :d3) 10)] )
             )
         (rep 2)
         (evr 4 rev))
-
-       :in-amp [1.5]
+       :in-amp [1.75]
        )
 
 
@@ -675,15 +719,17 @@
   (pause! :singlesmp)
   (trg :singlesmp smp
        :in-trg (-> [ r r r [(rep "b sn0" 2)] ]
-                   (rep 16)
-                   (evr 4  [r r r ["b sn0" r r "b sn3"]])
-                   (evr 8 [r r r r r r r ["b sn0" r "b sn2" "b sn3"]])
-                                        ;(evr 3  [[(rep 2 "b bass23") (rep 2 r)] r "b bass23" r])
+                   (rep 32)
+                   (evr 8 (fn [x] (fst x 3)))
+                   ;(evr 4  [r r r ["b sn0" r r "b sn3"]])
+                   ;(evr 8 [r r r r r r r ["b sn0" r "b sn2" "b sn3"]])
+                   (evr 3  [[(rep "b bass15" 3) (rep r 5)] r])
+                   (evr 6  [[(rep "b bass23" 3) (rep r 5)] r])
                     )
        :in-loop [0]
        :in-buf ":in-trg"
        :in-step [1]
-       :in-amp [1.5])
+       :in-amp [1.25])
 
   )
 
@@ -717,6 +763,7 @@
                 (evr 2  [1 r r [1 1]])
                 (rpl 4  [[(rep 1 4)] 1 r [1 1 r r]])
                 (evr 7  [(rep 16 1)])
+                ;(evr 2 acc)
                 )
        :in-freq  (-> ["fc6" "fg6" "f d6" "fbb6"]
                       (rep 32)
@@ -725,7 +772,7 @@
                        (rep 8)
                        (evr 8 [0.01])
                        (rpl 4 [0.001])
-                       (rpl 5 [0.001])))
+                       (rpl 5 [0.0001])))
 
   (volume! :softh 5)
 
@@ -743,13 +790,17 @@
   (trg :bassd smp
    :in-trg
    (->
-    ;["bbd1"]
-    [[r (rep "b bd1" 2) r ]  ["b sn1"  "b bd4"] [r r "b bd1" r] [ "b sn2" r "b bd1" r]]
+    ["bbd1"]
+    ;[[(rep "b bd1" 2) r  (rep "b bd1" 1) ]  [[(rep "b sn1" 4)]  "b bd4"] [r r "b bd1" r] [ "b sn2" "b bd1"]]
          (rep 16)
-         ;(evr 3  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bd1" 1) r] [ "b sn2" "b bass15" r r]])
+         ;(evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bd1" 1) r] [ "b sn2" "b bass15" r r]])
+         ;(evr 7 sfl)
+         ;(rpl 0 asc 0 [(rep "b bd1" 16)])
+         ;(rpl 15 asc 1 [(rep "b bass15" 16)])
+         ;(evr 19 asc 1 fst)
          ;(evr 4 [[(rep "b bd1" 4)]   [(rep  "b sn1" 4)] [r r  "b bass23" r] [ "b sn2" r "b bd1" r]])
-         ;;(evr 7  ["b bd1"   (acc [(rep "b sn2" 8)]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
-         ;(evr 8  (sfl (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r])))
+         ;(evr 7  ["b bd1"   (acc [(rep "b sn2" 8)]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
+         ;(evr 8   (fll 16 [r "b bass15"  "b sn1" r   "b bass23" r  "b sn0" r]))
          ;;(evr 15 acc)
          ;(evr 4 rev)
          )
@@ -770,7 +821,7 @@
   (trg! :bassd :bassde trg-fx-echo
         :in-decay-time [(/ (/ 1 0.5626)  2)]
         :in-delay-time  [(/ (/ 1 0.5626)  50)]
-        :in-amp (-> [0.1]
+        :in-amp (-> [0.25]
                     (rep 16)
                     (evr 16 [0.125 0.5 0.75 1 0.75 0.5 1 0.125])))
 
@@ -807,9 +858,7 @@
 
 (remove-event-handler :bassdtrg)
 
-
 (def softhbus (audio-bus-monitor (get-out-bus :softh)))
-
 
 (on-trigger (get-trigger-id :tick :in-trg)
             (fn [val]
@@ -845,6 +894,8 @@
        [(rep "n d3" 16)]
        [(rep "n a3" 16)]
        (fst ["n c#2" "n e3" "n b3" "n b2"] 2)
+       [r]
+       [r]
        :in-dur [10.5]
        :in-amp [1]
        :in-note ":in-trg"
@@ -853,7 +904,7 @@
                      (evr 4 [100]))
        )
 
-  (volume! :ks1 1.5)
+  (volume! :ks1 2.5)
 
   (trg! :ks1 :ks1d trg-fx-feedback-distortion
         :in-noise-rate [1]
@@ -881,14 +932,16 @@
   (trg :vb
        vintage-bass
        :in-trg
-       [(rep "n a5" 16)]
-       [(rep "n b5" 16)]
-       [(rep "n d5" 16)]
-       [(rep "n e4" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]
-       [(rep "n b1" 16)]
-       [(rep "n d1" 16)]
-       [(rep "n a1" 16)]
-       (fst ["n c#2" "n e3" "n b3" "n b2"] 1)
+       ;[(rep "n a5" 16)]
+       ;[(rep "n b5" 16)]
+       ;[(rep "n d5" 16)]
+       ;[(rep "n e4" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]
+       ;[(rep "n b1" 16)]
+       ;[(rep "n d1" 16)]
+       ;[(rep "n a1" 16)]
+       ;(fst ["n c#2" "n e3" "n b3" "n b2"] 1)
+       (slw ["n b2" "n c#3" "n d2" "n d4"])
+       ;[r]
                                         ;[(rep 16  "n e3")]
                                         ;[(rep 16 "n b3")]
                                         ;[(rep 16 "n c4")]
@@ -898,14 +951,14 @@
        :in-note  ":in-trg"
        :in-a [0.01]
        :in-d [1.9]
-       :in-s [1.1]
-       :in-r [1.85])
+       :in-s [2.1]
+       :in-r [2.85])
 
-  (volume! :vb 0.8)
+  (volume! :vb 0.58)
 
   (trg! :vb :distro trg-fx-distortion2 :in-amount [0.97])
 
-  (trg! :vb :reverb trg-fx-reverb :in-sig-a [0.53])
+  (trg! :vb :reverb trg-fx-reverb :in-sig-a [0.33])
 
   )
 
@@ -926,7 +979,7 @@
 
 (println (map find-note-name (chord :d2 :7sus2)))
 
-
+(sta)
 (do
   (trg :tb303sn tb303)
 
@@ -936,9 +989,9 @@
        tb303
        :in-trg
        (->  (fst ["n c2" r r ["n c2" "n d2"]])
-             (rep 16)
-             (evr 2  (fst ["n e2" ["n d3"  "n c2"] r r]))
-             (rpl 3  (fst [(rep "n e3" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]))
+             ;(rep 16)
+             ;(evr 2  (fst ["n e2" ["n d3"  "n c2"] r r]))
+             ;(rpl 3  (fst [(rep "n e3" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]))
              ;(evr 1 fst)
              ;(evr 4 rev)
              ;(evr 1 acc)
@@ -964,7 +1017,7 @@
        )
 
 
-  (volume! :tb303sn 2)
+  (volume! :tb303sn 5)
 
   )
 
