@@ -1109,3 +1109,61 @@
 (stp :tb303sn)
 
 (sta)
+
+
+(do
+  (trg :bw bowed)
+
+  (pause! :bw)
+
+  (trg :bw bowed
+       :in-trg (->  (fst ["n c3" r r ["n c3" "n d3"]])
+                    (rep 16)
+                    (evr 2  (fst ["n e3" ["n d4"  "n c3"] r r]))
+                    (rpl 3  (fst [(rep "n e4" 2)  (rep "n c#4" 2)  (rep "n b3" 2)  (rep "n b1" 2)]))
+                    (evr 1 fst)
+                                        ;(evr 4 rev)
+                    (evr 1 acc)
+                                        ;(evr 3  [["n e2" "n a2" r r] [r "n d3" "n e3" "n d2"]])
+                                        ;(evr 4  ["n d3" ["nd3" "nb2" "ne3" "na2"]])
+                                        ;(evr 5  ["n a3" r r ["ne3" "na2" "nd3" "nc2"]])
+                                        ;(evr 1 slw)
+                                        ;(evr 2 slw)
+                                        ;(evr 4 rev)
+                                        ;(evr 3 fst)
+                    )
+       :in-amp [1]
+       :in-note  ":in-trg")
+
+  (volume! :bw 4))
+
+
+
+(do
+  (trg :simp smp)
+  (pause! :simp)
+  (trg :simp smp
+       :in-trg (-> [[(fll 8  ["b bd4" "b bass23"]) (rep r 4)] r r r]
+                   (fst 16)
+                   (rep 32)
+                   (evr 2 asc 3 [(rep "b sn0" 64)])
+                   (evr 3 asc 3 [(fll 8 ["b bass23" "b bass21"])])
+                   (evr 17 dcl)
+                   (evr 19 acc)
+                   (evr 11 fst)
+                   (rpl 3 [(rep "b k1" 8)])
+                   (evr 15 rev)
+                   (evr 22 (fn [x] (slw x 4)))
+                   ;(evr 1 (fn [x] (fst x 4)))
+                  )
+       :in-loop (rep  [1] 8) ;[1] (rep [0] 7)
+       :in-buf ":in-trg"
+       :in-step  (rep [2] 8) ;[2] (rep [2] 7)
+       :in-amp [0.95])
+
+  (trg! :simp :simpd trg-fx-distortion2 :in-amount [0.63] )
+
+
+  )
+
+(play! :simp)
