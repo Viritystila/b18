@@ -13,17 +13,18 @@
   (load-all-SuperDirt-samples)
   (println "Samples loaded"))
 
-
 ;;Muista vb!!!!
 
 (defn add-tts-sample [name path nosamples]
 
   (println "Begin loading sample " name)
-
-  (add-sample name (string-to-buffer (generate-markov-text path nosamples)))
-  (println "Sample" name "loaded") )
+  (let [txt (generate-markov-text path nosamples)
+        _ (add-sample name (string-to-buffer txt))]
+    (println "Sample" name "loaded")
+    txt))
 
 (def oc (osc/osc-client "localhost" 44100))
+
 
 (set-pattern-duration (/ 1 (* 1 0.5625)))
 
@@ -55,7 +56,7 @@
 
 
 
-(osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1920 "height" 1080)
+(osc/osc-send oc "/cutter/start" "fs" fs "vs" vs  "width" 1280 "height" 800)
 
 (osc/osc-send oc "/cutter/stop")
 
@@ -146,6 +147,8 @@
 
 
 
+;(osc/osc-send oc "/cutter/connect" 57111)
+
 
 (osc/osc-send oc "/cutter/stop-buf" "tieto1")
 
@@ -154,11 +157,12 @@
 
 
 (do
-  (add-tts-sample "k1"  "generalx2paradisedaqx2.txt" 200)
+  (def k1t (add-tts-sample "k1"  "generalx2paradisedaqx2.txt" 200))
 
-  (add-tts-sample "k2"  "generalx2paradisedaqx2.txt" 200)
+  (def k2t (add-tts-sample "k2"  "generalx2paradisedaqx2.txt" 200))
 
-  (add-tts-sample "k3"  "generalx2paradisedaqx2.txt" 200)
+  (def k3t (add-tts-sample "k3"  "generalx2paradisedaqx2.txt" 200))
+  nil
   )
 
 (do
@@ -213,7 +217,7 @@
 
   (trg :uhsmp smp
        :in-trg
-       (->   (fll 16 ["b k2" r "b oo" r "b k3" "b uhea" r])
+       (->   (fll ["b k2" r "b oo" r "b k3" "b uhea" r] 16)
              (slw 16)
              ;;(evr 5 (acc [(rep "b k1" 16)]))
              (evr 3 [r])
@@ -303,7 +307,7 @@
                      ;(evr 1 [ "nc2" r  ["ng2" "nbb2" r r] "nc1"])
                      ;(evr 2 [ "nd2" r  ["ng2" "nbb2" r r] "nc2"])
                      ;(evr 4 (fn [x] (fst  x 2)))
-                    (evr 3 [(fll 8 ["ng2" "nc5" "nbb4" "nbb3"]) "nc1" "ng1" "nc2"])
+                    (evr 3 [(fll ["ng2" "nc5" "nbb4" "nbb3"] 8) "nc1" "ng1" "nc2"] )
                      ;(evr 6 [ "nc2" "nd2"  ["ng1" "nbb3"] "nc1"])
                      ;(evr 3 [ [r r r r "nc2" "nd2"] ["nd3" "nc2" r r r r]])
                      ;(evr 16  [ "nd2" "nc3"  "ng3" "ng2"  "nbb3" "nbb2"  ["ng1" r] "nc1"])
@@ -336,21 +340,28 @@
 ;;;;;;;;;;;;;;;;;
 ;;;Setti1 Video;;
 ;;;;;;;;;;;;;;;;;
-(def overpm (audio-bus-monitor (get-out-bus :overp)))
-
-(def uhbm (audio-bus-monitor (get-out-bus :uhsmp)))
 
 
-(on-trigger (get-trigger-id :tick :in-trg)
+(on-trigger (get-trigger-vol-id :uhsmp)
             (fn [val]
               (let []
                 ;(println val)
-                (osc/osc-send oc "/cutter/set-float" "iFloat1" @overpm)
-                (osc/osc-send oc "/cutter/set-float" "iFloat2" @uhbm)))
-            :smp_obv)
+                (osc/osc-send oc "/cutter/set-float" "iFloat1" val)
+                ))
+            :uhsmp)
 
-(remove-event-handler :smp_obv)
+(remove-event-handler :uhsmp)
 
+
+(on-trigger (get-trigger-vol-id :overp)
+            (fn [val]
+              (let []
+                ;(println val)
+                (osc/osc-send oc "/cutter/set-float" "iFloat2" val)
+                ))
+            :overp)
+
+(remove-event-handler :overp)
 
 ;;Setti2
 ;;Villen setti
@@ -382,16 +393,35 @@
 (do (trg :hz haziti-clap)
     (pause! :hz)
     (trg :hz haziti-clap
-         :in-trg  (-> [(rep 8 1)]
+         :in-trg  (-> [(rep 1 8)]
                       (rep 8))))
 
 (play! :hz)
+
+(volume! :hz 0.2)
 
 ;;;;;
 ;;;Setti2 video
 ;;;;;;
 (osc/osc-send oc "/cutter/set-float" "iFloat15" 1)
 
+
+
+(on-trigger (get-trigger-vol-id :singlesmp)
+            (fn [val]
+              (let []
+                ;(println val)
+                (osc/osc-send oc "/cutter/set-float" "iFloat3" val)
+                ))
+            :singlesmp)
+
+(remove-event-handler :singlesmp)
+
+
+
+;(osc/osc-send oc "/cutter/set-trigger" (get-trigger-vol-id :singlesmp) "iFloat3")
+
+;(osc/osc-send oc "/cutter/unset-trigger" (get-trigger-vol-id :singlesmp) "iFloat3")
 
 
 ;;;;;;;;;;;;;;
@@ -418,7 +448,7 @@
 
   (trg :nh hat2
        :in-trg
-       (->  (fll 16 [1 0])
+       (->  (fll [1 0] 16)
             (rep 16)
             ;(evr 2 [[1 1] r [1 1] r [1 1] r [1 1] 1])
             ;(evr 6  (fn [x] (fst x 4)))
@@ -466,12 +496,29 @@
 
 (on-trigger (get-trigger-val-id :nh :in-trg)
             (fn [val]
-              (overtone.osc/osc-send oc "/cutter/set-float" "iFloat4" val)
+              ;(overtone.osc/osc-send oc "/cutter/set-float" "iFloat4" val)
                 (overtone.osc/osc-send oc "/cutter/i-buf" "tieto2" (int 0))
               )
             :nhtrg)
 
 (remove-event-handler :nhtrg)
+
+
+(on-trigger (get-trigger-vol-id :nh-vol)
+            (fn [val]
+              (let []
+                ;(println val)
+                (osc/osc-send oc "/cutter/set-float" "iFloat4" val)
+                ))
+            :nh-vol)
+
+(remove-event-handler :nh-vol)
+
+
+;(osc/osc-send oc "/cutter/set-trigger" (get-trigger-vol-id :nh) "iFloat4")
+
+;(osc/osc-send oc "/cutter/unset-trigger" (get-trigger-vol-id :nh) "iFloat4")
+
 
 ;;;;;;;;;;;;;;;;;;
 ;;;;Setti4
@@ -504,11 +551,11 @@
 
   (trg! :singlesmp :smpe trg-fx-echo
         :in-amp ;(evr 6 [1] (rep 32 [0]))
-        (-> (rep [1] 6)
+        (-> (rep [0.2] 6)
              (evr 6 [1]))
-        :in-decay-time (-> [0.51]
+        :in-decay-time (-> [0.251]
                            (rep 16)
-                           (rpl 16 [10]))
+                           (rpl 16 [0.2]))
         :in-delay-time [0.1])
 
   )
@@ -529,12 +576,30 @@
               ;(println (int val))
               (let []
                 (overtone.osc/osc-send oc "/cutter/i-buf" "spede1" (int val))
-                (overtone.osc/osc-send oc "/cutter/set-float" "iFloat5" val)
+                ;(overtone.osc/osc-send oc "/cutter/set-float" "iFloat5" val)
 
                    ))
             :sings)
 
 (remove-event-handler :sings)
+
+
+(on-trigger (get-trigger-vol-id :singlesmp)
+            (fn [val]
+              (let []
+                ;(println val)
+                (osc/osc-send oc "/cutter/set-float" "iFloat5" val)
+                ))
+            :singlesmp-vol)
+
+(remove-event-handler :singlesmp-vol)
+
+
+;(osc/osc-send oc "/cutter/set-trigger" (get-trigger-vol-id :singlesmp) "iFloat5")
+
+;(osc/osc-send oc "/cutter/unset-trigger" (get-trigger-vol-id :singlesmp) "iFloat5")
+
+
 
 ;;;;;;;;;;;;;;;;;;;;
 ;;;Setti5;;;;;
@@ -563,7 +628,7 @@
              (rpl 22 [[1 2 (rep r 6)] [r [14 50]]])
              ;(rpl 28 [1 [4 5] [(rep r 4)] 3 30  ])
              ;(evr 14 [r])
-             (evr 16 [[2 r 3 4] r [5 6 r 7] 1 [8 9 1 2 ] r [2 3] r] )
+             ;(evr 16 [[2 r 3 4] r [5 6 r 7] 1 [8 9 1 2 ] r [2 3] r] )
              (evr 2 (fn [x] (fst x 2)))
              ;(evr 1 fst)
              )
@@ -576,7 +641,7 @@
        :in-f2 (-> [200]
                    (rep 32)
                    (evr 16 [ 2000]))
-       :in-f1 (fll 32 [1000 2000 100])
+       :in-f1 (fll [1000 2000 100] 32)
        :in-amp [0.25])
 
   (volume! :kick 1.75)
@@ -684,18 +749,33 @@
 (remove-event-handler :kicktrg)
 
 
-(def kickbus (audio-bus-monitor (get-out-bus :kick)))
-
-
-(on-trigger (get-trigger-id :tick :in-trg)
+(on-trigger (get-trigger-vol-id :kick)
             (fn [val]
               (let []
                 ;(println val)
-                (osc/osc-send oc "/cutter/set-float" "iFloat6" @kickbus) ))
-            :kickbus)
+                (osc/osc-send oc "/cutter/set-float" "iFloat6" val)
+                ))
+            :kick-vol)
 
-(remove-event-handler :kickbus)
+(remove-event-handler :kick-vol)
 
+
+;; (def kickbus (audio-bus-monitor (get-out-bus :kick)))
+
+
+;; (on-trigger (get-trigger-id :tick :in-trg)
+;;             (fn [val]
+;;               (let []
+;;                 ;(println val)
+;;                 (osc/osc-send oc "/cutter/set-float" "iFloat6" @kickbus) ))
+;;             :kickbus)
+
+;; (remove-event-handler :kickbus)
+
+
+;(osc/osc-send oc "/cutter/set-trigger" (get-trigger-vol-id :kick) "iFloat6")
+
+;(osc/osc-send oc "/cutter/unset-trigger" (get-trigger-vol-id :kick) "iFloat6")
 
 
 ;;;;;
@@ -739,7 +819,21 @@
 ;;Setti 6 video
 ;;;;;;;;;;
 ;;Sormileikki
-;;onnepyörä
+
+
+
+(on-trigger (get-trigger-val-id :singlesmp :in-trg)
+            (fn [val]
+              ;(println (int val))
+              (let []
+                (overtone.osc/osc-send oc "/cutter/i-buf" "sormi1" (int val))
+                ;(overtone.osc/osc-send oc "/cutter/set-float" "iFloat5" val)
+
+                   ))
+            :sorm)
+
+(remove-event-handler :sorm)
+
 
 
 
@@ -791,12 +885,12 @@
    :in-trg
    (->
     ["bbd1"]
-    ;[[(rep "b bd1" 2) r  (rep "b bd1" 1) ]  [[(rep "b sn1" 4)]  "b bd4"] [r r "b bd1" r] [ "b sn2" "b bd1"]]
+    ;[[(rep "b bd1" 2) r  (rep "b bd4" 1) ]  [[(rep "b sn1" 4)]  "b bd4"] [r r "b bd1" r] [ "b sn2" "b bd1"]]
          (rep 16)
-         ;(evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bd1" 1) r] [ "b sn2" "b bass15" r r]])
+         ;(evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bass20" 1) r] [ "b sn2" "b bass15" r r]])
          ;(evr 7 sfl)
-         ;(rpl 0 asc 0 [(rep "b bd1" 16)])
-         ;(rpl 15 asc 1 [(rep "b bass15" 16)])
+         ;(rpl 0 asc 0 [(rep "b bd1" 16)] nil)
+;         (rpl 15 asc 1 [(rep "b bass15" 16)] nil)
          ;(evr 19 asc 1 fst)
          ;(evr 4 [[(rep "b bd1" 4)]   [(rep  "b sn1" 4)] [r r  "b bass23" r] [ "b sn2" r "b bd1" r]])
          ;(evr 7  ["b bd1"   (acc [(rep "b sn2" 8)]) [ "b bd2" r "b bd1" r] [ "b sn1" r "b bd1" r]])
@@ -851,23 +945,39 @@
             (fn [val]
               ;(println val)
               (let []
-                (overtone.osc/osc-send oc "/cutter/i-buf" "suu1" (int 0))
+                (overtone.osc/osc-send oc "/cutter/i-buf" "onni1" (int val))
 
                    ))
             :bassdtrg)
 
 (remove-event-handler :bassdtrg)
 
-(def softhbus (audio-bus-monitor (get-out-bus :softh)))
 
-(on-trigger (get-trigger-id :tick :in-trg)
+(on-trigger (get-trigger-vol-id :softh)
             (fn [val]
               (let []
-                ;(println @softhbus)
-                (osc/osc-send oc "/cutter/set-float" "iFloat7" @softhbus) ))
-            :softhbus)
+                ;(println val)
+                (osc/osc-send oc "/cutter/set-float" "iFloat7" val)
+                ))
+            :softh-vol)
 
-(remove-event-handler :softhbus)
+(remove-event-handler :softh-vol)
+
+
+;; (def softhbus (audio-bus-monitor (get-out-bus :softh)))
+
+;; (on-trigger (get-trigger-id :tick :in-trg)
+;;             (fn [val]
+;;               (let []
+;;                 ;(println @softhbus)
+;;                 (osc/osc-send oc "/cutter/set-float" "iFloat7" @softhbus) ))
+;;             :softhbus)
+
+;; (remove-event-handler :softhbus)
+
+
+;(osc/osc-send oc "/cutter/set-trigger" (get-trigger-vol-id :softh) "iFloat7")
+
 
 ;;;;;;;;;;;,,
 ;; Setti 8
@@ -876,7 +986,7 @@
 
 (pause! :bassd)
 (pause! :softh)
-
+(pause! :singlesmp)
 
 (do
   (trg :ks1 ks1)
@@ -890,12 +1000,12 @@
        [(rep "n b5" 8) ]
        [(rep "n d5" 6)]
        [(rep "n e4" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]
-       (sfl [(fll 32  [r r r "n b3"])])
+       (sfl [(fll [r r r "n b3"] 32) ])
        [(rep "n d3" 16)]
        [(rep "n a3" 16)]
        (fst ["n c#2" "n e3" "n b3" "n b2"] 2)
-       [r]
-       [r]
+       ;[r]
+       ;[r]
        :in-dur [10.5]
        :in-amp [1]
        :in-note ":in-trg"
@@ -932,14 +1042,14 @@
   (trg :vb
        vintage-bass
        :in-trg
-       ;[(rep "n a5" 16)]
-       ;[(rep "n b5" 16)]
-       ;[(rep "n d5" 16)]
-       ;[(rep "n e4" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]
-       ;[(rep "n b1" 16)]
-       ;[(rep "n d1" 16)]
-       ;[(rep "n a1" 16)]
-       ;(fst ["n c#2" "n e3" "n b3" "n b2"] 1)
+       [(rep "n a5" 16)]
+       [(rep "n b5" 16)]
+       [(rep "n d5" 16)]
+       [(rep "n e4" 2)  (rep "n c#3" 2)  (rep "n b2" 2)  (rep "n b1" 2)]
+       [(rep "n b1" 16)]
+       [(rep "n d1" 16)]
+       [(rep "n a1" 16)]
+       (fst ["n c#2" "n e3" "n b3" "n b2"] 1)
        (slw ["n b2" "n c#3" "n d2" "n d4"])
        ;[r]
                                         ;[(rep 16  "n e3")]
@@ -1024,28 +1134,47 @@
 (play! :tb303sn)
 
 
+(stp :tb303sn)
 ;;;Setti 8 video
 ;;;;;;
 ;;;Hapsiainen
 
-(def vbbus (audio-bus-monitor (get-out-bus :tb303sn)))
 
 
-(on-trigger (get-trigger-id :tick :in-trg)
+(on-trigger (get-trigger-vol-id :tb303sn)
             (fn [val]
               (let []
-                ;(println @softhbus)
-                (osc/osc-send oc "/cutter/set-float" "iFloat8" @vbbus) ))
-            :vbbus)
+                ;(println val)
+                (osc/osc-send oc "/cutter/set-float" "iFloat8" val)
+                ))
+            :tb-vol)
 
-(remove-event-handler :vbbus)
+(remove-event-handler :tb-vol)
 
-@vbbus
 
+
+
+;(def vbbus (audio-bus-monitor (get-out-bus :tb303sn)))
+
+
+;; (on-trigger (get-trigger-id :tick :in-trg)
+;;             (fn [val]
+;;               (let []
+;;                 ;(println @softhbus)
+;;                 (osc/osc-send oc "/cutter/set-float" "iFloat8" @vbbus) ))
+;;             :vbbus)
+
+;; (remove-event-handler :vbbus)
+
+;; @vbbus
+
+
+;; (osc/osc-send oc "/cutter/set-trigger" (get-trigger-vol-id :tb303sn) "iFloat8")
 
 ;;;;;;;;;;;;;;;;
 ;;;tmp
 
+(stop)
 
 (trg :singlesmp smp
      :in-trg (acc (fst [2 r 3 4 5 r r 6] 8) 4) (rep [r] 7)

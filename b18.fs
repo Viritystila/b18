@@ -150,8 +150,8 @@ void main(void) {
   uv.y=1.0-uv.y*1;
   float sclr=1000*iFloat2;//*iFloat1;
   //uv=floor(uv * (sclr+iFloat1/10 )) / ( sclr+iFloat1 );
-  vec2 uv_noise=noiseUV(uv, 1, 0.1/(iFloat1));
-  vec2 dsUV=distortUV(uv, uv, iChannel2, iFloat2);
+  vec2 uv_noise=noiseUV(uv, 1, 0.1/(1+iFloat3));
+  vec2 dsUV=distortUV(uv, uv, iChannel2, 0.2);
 
 
   vec4 ic1=texture2D(iChannel1, uv2);
@@ -196,13 +196,13 @@ void main(void) {
   vec4 ic13d=texture2D(iChannel13, dsUV);
 
 
-  vec4 ic2g=glitch(uv_noise, uv, ic2, ic3, iFloat1, iChannel3, iChannel2);
+  vec4 ic2g=glitch(uv_noise, uv, ic2, ic3, iFloat3, iChannel3, iChannel2);
   vec4 ic3g=glitch(dsUV, uv, ic3, ic3, 1, iChannel3, iChannel2);
   vec4 ic4g=texture2D(iChannel4, dsUV);
   vec4 ic5g=texture2D(iChannel5, dsUV);
   vec4 ic6g=texture2D(iChannel6, dsUV);
   vec4 ic7g=texture2D(iChannel7, dsUV);
-  vec4 ic8g=glitch(dsUV, uv, ic8, ic8, 1, iChannel3, iChannel8);
+  vec4 ic8g=glitch(dsUV, uv, ic8, ic8, 1+iFloat4, iChannel3, iChannel8);
 
 
   vec2 pfuv=uv;
@@ -218,16 +218,16 @@ void main(void) {
     switch(set_switch){
     case 0:
       float fade_size=2;
-      float p1= mix(fade_size, 0.0-fade_size, uv.x-0.05*iFloat2*5);
+      float p1= mix(fade_size, 0.0-fade_size, uv.x-5*iFloat1*iFloat1);
       vec4 o1=mix(ic1, ic3d, smoothstep(1, 0, p1));
       vec4 o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 0);
       op=o1b;
       break;
     case 1:
       fade_size=2;
-      p1= mix(fade_size, 0.0-fade_size, uv.x-0.05*iFloat1*5);
+      p1= mix(fade_size, 0.0-fade_size, uv.x-0.05*iFloat3*5);
       o1=mix(ic1, ic2, smoothstep(1, 0, p1));
-      o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 0);
+      o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 1);
       //gb2 tulee mukaan
       vec4 o2= colorRemoval(ic2, ic2g, 1, 1, 0.6, 0.93, 1);
       op=o2;
@@ -243,7 +243,7 @@ void main(void) {
       op=o3;
       break;
     case 3:
-      vec4 vmss=mix(ic5, pf, 0.75+iFloat5/90000); //60000
+      vec4 vmss=mix(ic5, pf, 0.75+iFloat5/1); //60000
       o3=colorRemoval(vmss, ic1, 1, 0.3, 0.0, 0.0, 0.93);
       op=o3;
       break;
@@ -258,9 +258,9 @@ void main(void) {
       op=o4;
       break;
     case 5:
-      vec4 o5pf = mix(ic2, pfg, 0.93595);
-      vec4 o5=colorRemoval(o5pf, ic6, 1, 0.5, 0, 0, 0);
-      o5=mix(o5pf, ic10, 5);
+      vec4 o5pf = mix(ic1, pfg, 0.993595);
+      vec4 o5=colorRemoval(o5pf, ic10, 1, 0.5, 0, 0, 0);
+      o5=mix(o5, ic10, 10);
       op=o5;
       break;
     case 6:
