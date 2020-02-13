@@ -224,7 +224,7 @@
              (evr 4 [r])
              (evr 5 [r])
              ;(evr 1 acc)
-             (rpl 6 [(rep  "b ahh" 4)])
+             (rpl 6 [(rep  "b k2" 4)])
              (rpl 10 ["buhea"])
              (rpl 12 ["bk1"])
              ;;(evr 1 (fn [x] (fst x 32)))
@@ -341,16 +341,27 @@
 ;;;Setti1 Video;;
 ;;;;;;;;;;;;;;;;;
 
+(nth  (clojure.string/split k1t '#" ") (rand-int (count  (clojure.string/split k1t '#" "))))
+
 
 (on-trigger (get-trigger-vol-id :uhsmp)
             (fn [val]
               (let []
-                ;(println val)
+                                        ;(println val)
+                ;(osc/osc-send oc "/cutter/write" "aaaaa" 0 220 10 100 0.2 0.4 20 10 1)
                 (osc/osc-send oc "/cutter/set-float" "iFloat1" val)
                 ))
+            :uhsmp-vol)
+
+(remove-event-handler :uhsmp-vol)
+
+
+(on-trigger (get-trigger-val-id :uhsmp :in-trg)
+            (fn [val]
+              (let [ tx (nth  (clojure.string/split k1t '#" ") (rand-int (count  (clojure.string/split k1t '#" "))))]
+                (osc/osc-send oc "/cutter/write" tx 400 520 10 100 0.2 0.4 20 10 1)))
             :uhsmp)
 
-(remove-event-handler :uhsmp)
 
 
 (on-trigger (get-trigger-vol-id :overp)

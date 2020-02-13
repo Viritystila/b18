@@ -153,6 +153,7 @@ void main(void) {
   vec2 uv_noise=noiseUV(uv, 1, 0.1/(1+iFloat3));
   vec2 dsUV=distortUV(uv, uv, iChannel2, 0.2);
 
+  vec4 txt=texture2D(iText, uv);
 
   vec4 ic1=texture2D(iChannel1, uv2);
   ic1.rgb=ic1.bgr;
@@ -219,7 +220,7 @@ void main(void) {
     case 0:
       float fade_size=2;
       float p1= mix(fade_size, 0.0-fade_size, uv.x-5*iFloat1*iFloat1);
-      vec4 o1=mix(ic1, ic3d, smoothstep(1, 0, p1));
+      vec4 o1=mix(ic1, ic3d+txt, smoothstep(1, 0, p1));
       vec4 o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 0);
       op=o1b;
       break;
@@ -269,8 +270,8 @@ void main(void) {
       op=o6;
       break;
     case 7:
-      op=waveColors(ic6, uv, 1, 0.1, 0.1, int(floor(iFloat8*iFloat8*iFloat8*300000)));//ic6;
-      op=mix(op, pf2, 0.5+0.25+iFloat8);
+      op=waveColors(ic6, uv, 1, 0.1, 0.1, 1+int(floor(iFloat8*iFloat8*iFloat8*300000)));//ic6;
+      op=mix(op, pf2, 0.679999+0.25+iFloat8);
       break;
 
     }
