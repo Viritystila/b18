@@ -230,7 +230,7 @@ void main(void) {
       o1=mix(ic1, ic2, smoothstep(1, 0, p1));
       o1b=colorRemoval(ic3, o1, 1, 0.2, 0, 0, 1);
       //gb2 tulee mukaan
-      vec4 o2= colorRemoval(ic2, ic2g, 1, 1, 0.6, 0.93, 1);
+      vec4 o2= colorRemoval(ic2, ic2g, 1, 1, 0.6, 0.093, 1);
       op=o2;
       break;
     case 2:

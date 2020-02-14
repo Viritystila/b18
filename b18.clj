@@ -224,7 +224,7 @@
              (evr 4 [r])
              (evr 5 [r])
              ;(evr 1 acc)
-             (rpl 6 [(rep  "b k2" 4)])
+             (rpl 6 [(rep  "b ahh" 4)])
              (rpl 10 ["buhea"])
              (rpl 12 ["bk1"])
              ;;(evr 1 (fn [x] (fst x 32)))
@@ -240,7 +240,7 @@
        :in-amp [0.75]
        :in-start-pos
        (-> (rep [0] 8)
-                                        ;(evr 5 [(range 0 1600 10)])
+           (evr 5 [(range 0 1600 10)])
             )
        :in-step
        (->  (rep [2] 8)
@@ -403,9 +403,13 @@
 
 (do (trg :hz haziti-clap)
     (pause! :hz)
+
     (trg :hz haziti-clap
          :in-trg  (-> [(rep 1 8)]
-                      (rep 8))))
+                      (rep 8)))
+
+(volume! :hz 0.2)
+)
 
 (play! :hz)
 
@@ -895,10 +899,19 @@
   (trg :bassd smp
    :in-trg
    (->
-    ["bbd1"]
-    ;[[(rep "b bd1" 2) r  (rep "b bd4" 1) ]  [[(rep "b sn1" 4)]  "b bd4"] [r r "b bd1" r] [ "b sn2" "b bd1"]]
-         (rep 16)
-         ;(evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bass20" 1) r] [ "b sn2" "b bass15" r r]])
+    ;["bbd1"]
+     ;;[[(rep "b bd1" 2) r  (rep "b bd4" 1) ]  [[(rep "b sn1" 2)]  "b bd4"] [r r "b bd1" r] [ "b sn2" "b bd1"]]
+    [ [(rep "b bd1" 2) r (rep "b bd4" 1) ]  [[(rep "b sn1" 1)]  "b bd4"] ["b bd1"] [ "b sn2" "b bd1"]]
+    (rep 32)
+    ;(evr 3  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bass20" 1) r] [ "b sn2" "b bass15" r r]])
+     ;(evr 9 rev)
+     (evr 17 del 1 2)
+     (evr 5 rpl 0  [(rep "b bd1" 2) "b sn2" (rep "b bd4" 1) ] nil )
+     (evr 10 rpl 0 del 1 3 nil)
+     (evr 1 rpl 2 del 2 1 nil)
+     (evr 19 rpl 3 fst nil)
+     (evr 3  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bass20" 1) r] [ "b sn2" "b bass15" r r]])
+     ;(evr 2  [["b bd1"]  [ "b sn1" "b bd3"] [r r (rep "b bass20" 1) r] [ "b sn2" "b bass15" r r]])
          ;(evr 7 sfl)
          ;(rpl 0 asc 0 [(rep "b bd1" 16)] nil)
 ;         (rpl 15 asc 1 [(rep "b bass15" 16)] nil)
@@ -926,7 +939,7 @@
   (trg! :bassd :bassde trg-fx-echo
         :in-decay-time [(/ (/ 1 0.5626)  2)]
         :in-delay-time  [(/ (/ 1 0.5626)  50)]
-        :in-amp (-> [0.25]
+        :in-amp (-> [0.125]
                     (rep 16)
                     (evr 16 [0.125 0.5 0.75 1 0.75 0.5 1 0.125])))
 
